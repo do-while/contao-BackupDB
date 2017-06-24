@@ -1,0 +1,116 @@
+/* BackupDB styles */
+.db_section {
+    clear:both;
+    margin:20px;
+    border-bottom:1px solid #ccc;
+    min-height:100px;
+}
+.db_section.last {
+    border:none;
+}
+.db_section h2 {
+    margin-bottom:2px;
+}
+.db_section.results h2 {
+    margin-bottom:10px;
+}
+.db_section p {
+    line-height:1.2;
+}
+.db_section a.startbutton img {
+    filter:alpha(opacity=60);
+    -moz-opacity:0.6;
+    opacity:0.6;
+}
+.db_section a.startbutton:hover img {
+    filter:alpha(opacity=100);
+    -moz-opacity:1;
+    opacity:1;
+}
+.db_section a {
+    color:#f47c00;
+}
+.db_section a:hover {
+    text-decoration:underline;
+}
+.db_section span.indent {
+    width:64px;
+    display:inline-block;
+}
+.db_section .warning {
+    color:#c91818;
+}
+.db_section .db_button {
+    float:left;
+    width:80px;
+    margin-top:0;
+    margin-right:16px;
+    margin-bottom:14px;
+}
+.db_section .db_description {
+    line-height:1.2;
+    width:auto;
+    display:table-cell;
+    padding-bottom:20px;
+}
+.db_section p.db_cron {
+    position:relative;
+    height:32px;
+    padding-left:40px;
+    padding-top:0;
+    margin-top:16px;
+}
+.db_section p.db_cron img {
+    position:absolute;
+    top:0;
+    left:0;
+}
+.db_footer {
+    background:#f3f3f5;
+    margin:0;
+    padding:4px 20px 6px;
+    color:#aaa;
+    height:16px;
+}
+.db_footer .copyrights {
+    float:left;
+}
+.db_footer a {
+    color:#aaa;
+}
+.db_footer a:focus,
+.db_footer a:hover,
+.db_footer a:active {
+    text-decoration:underline;
+}
+.db_footer .db_version {
+    font-weight:bold;
+    float:right;
+}
+.db_table,
+.db_entries {
+    padding-top:4px;
+    padding-bottom:4px;
+}
+.db_table {
+    display:inline-block;
+    width:240px;
+    padding-left:10px;
+}
+.db_entries {
+    display:inline-block;
+    width:120px;
+    color:#999;
+}
+.db_table.even,
+.db_entries.even {
+    background-color:#f4f4f4;
+}
+.makeWsTemplate .db_footer {
+    margin-bottom:40px;
+    height:30px;
+    padding:5px 20px;
+}
+.makeWsTemplate .db_footer a {
+    text-decoration:none;
+}

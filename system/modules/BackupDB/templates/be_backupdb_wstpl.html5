@@ -1,0 +1,29 @@
+﻿
+<!-- START be_backupdb_wstpl -->
+<div class="makeWsTemplate">
+<div class="db_section results first">
+  <h2><?= $this->arrResults['header']['text'] ?></h2>
+
+  <p><?php $i = 0; foreach($this->arrResults['entries'] as $entry): $cl = $i & 1 ? 'odd' : 'even'; ?>
+  <span class="db_table <?= $cl ?>"><?= $entry[0] ?></span><span class="db_entries <?= $cl ?>"><?= $entry[1] ?> <?= $this->arrResults['entry']['text'][$entry[1] == 1 ? 0 : 1] ?></span><br>
+  <?php $i++; endforeach; ?>
+  </p>  
+</div>
+
+<div class="db_section last">
+  <h2><?= $this->arrResults['footer']['result'] ?></h2>
+
+  <p><br><strong><?= $this->arrResults['footer']['legend'] ?>:</strong></p>
+  <p><?= $this->arrResults['footer']['fileSQL'] ?><br>
+  <?= $this->arrResults['footer']['fileTXT'] ?><br>
+  <?= $this->arrResults['footer']['fileSTR'] ?></p>
+  <p><strong><?= $this->arrResults['footer']['text'] ?></strong></p>
+</div>
+
+<div class="db_footer">
+<a class="tl_submit" href="<?= $this->back ?>"><?= $this->arrResults['footer']['button'] ?></a>
+<span class="db_version"><?= $this->backupdb_version ?></span>
+</div>
+</div>
+<!-- END be_backupdb_wstpl -->
+

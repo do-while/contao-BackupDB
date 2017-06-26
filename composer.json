@@ -1,0 +1,45 @@
+{
+	"name": "do-while/contao-BackupDB",
+	"description":"Backup of the Contao database, automatic backup, creation of website templates for the Install Tool",
+	"keywords":["contao", "widget", "backup", "website template"],
+	"type": "contao-module",
+	"homepage":"https://www.softleister.de",
+	"license":"LGPL-3.0+",
+	"authors":[
+		{
+			"name": "Hagen Klemp",
+			"email": "info@softleister.de",
+			"homepage": "https://www.softleister.de",
+			"role":"Project leader"
+		}
+	],
+	"support":{
+		"issues":"https://github.com/do-while/contao-BackupDB/issues",
+		"wiki":"http://de.contaowiki.org/BackupDB",
+		"source":"https://github.com/do-while/contao-BackupDB"
+	},
+	"require": {
+		"contao/core": "~4.4",
+		"contao-community-alliance/composer-plugin":"~3.0"
+	},
+	"replace": {
+		"contao-legacy/BackupDB": "*"
+	},
+	"autoload":{
+		"classmap":["system/"],
+		"psr-4": {
+			"do-while\\contao-BackupDB\\": "system/modules/BackupDB/src/"
+		}
+	},
+	"extra": {
+		"contao": {
+			"sources": {
+				"system/modules/BackupDB": "system/modules/BackupDB"
+			}
+		},
+		"branch-alias": {
+			"dev-master": "4.4.x-dev",
+			"dev-dev": "4.4.x-dev"
+		}
+	}
+}

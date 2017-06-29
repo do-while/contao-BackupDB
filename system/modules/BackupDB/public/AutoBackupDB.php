@@ -80,7 +80,7 @@ class AutoBackupDb extends \Backend             // Datenbank ist bereits geöffn
         @set_time_limit( 600 );
         \System::loadLanguageFile('tl_backupdb');                   // Sprachenfiles laden
 
-        //--- alten Zeitstemple löschen ---
+        //--- alten Zeitstempel löschen ---
         $pfad = TL_ROOT . '/' . $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB';
         if( file_exists( $pfad . '/' . BACKUPDB_CRON_LAST ) ) {
             unlink( $pfad . '/' . BACKUPDB_CRON_LAST );             // LastRun-Datei löschen
@@ -148,6 +148,8 @@ class AutoBackupDb extends \Backend             // Datenbank ist bereits geöffn
         if( $ext === '.zip' ) {
             $objZip = new \ZipWriter( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/AutoBackupDB-1.zip' );
             $objZip->addFile( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/AutoBackupDB-1.sql' );
+            $objZip->addFile( 'composer.json' );
+            $objZip->addFile( 'composer.lock' );
             $objZip->close();
             unlink( $pfad . '/AutoBackupDB-1.sql' );
         }

@@ -21,7 +21,7 @@ $GLOBALS['TL_LANG']['tl_settings']['WsTemplatePath']     = array('Alternative pa
 $GLOBALS['TL_LANG']['tl_settings']['backupdb_blacklist'] = array('Blacklist for backups', 'Comma-separated list of tables for which the data is NOT being backed up. For example <em>tl_lock, tl_log, tl_search, tl_search_index, tl_session, tl_undo, tl_version</em> are not essential for recovery.');
 $GLOBALS['TL_LANG']['tl_settings']['backupdb_sendmail']  = array('E-mail notification after AutoBackup', 'Sends a mail after a successful backup to the administrator.');
 $GLOBALS['TL_LANG']['tl_settings']['backupdb_attmail']   = array('Append AutoBackup file', 'Append the backup file to the notification e-mail.');
-$GLOBALS['TL_LANG']['tl_settings']['backupdb_zip']       = array('Compress backup', 'The backup can be compressed as a ZIP archive.');
+$GLOBALS['TL_LANG']['tl_settings']['backupdb_zip']       = array('Compress backup', 'The ZIP file also contains the <em>composer.json</em> and <em>composer.lock</em> files');
 
 /**
  * Legends

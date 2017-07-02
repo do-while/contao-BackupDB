@@ -32,7 +32,7 @@
             "src/Resources/contao/templates/"
         ],
         "psr-4": {
-            "Softleister\\BackupDB\\": "src/"
+            "Softleister\\BackupDbBundle\\": "src/"
         }
     },
     "extra": {

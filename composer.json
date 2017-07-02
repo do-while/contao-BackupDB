@@ -2,7 +2,7 @@
 	"name": "do-while/contao-BackupDB",
 	"description":"Backup of the Contao database, automatic backup, creation of website templates for the Install Tool",
 	"keywords":["contao", "widget", "backup", "website template"],
-	"type": "contao-module",
+	"type": "contao-bundle",
 	"homepage":"https://www.softleister.de",
 	"license":"LGPL-3.0+",
 	"authors":[

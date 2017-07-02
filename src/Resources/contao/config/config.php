@@ -26,8 +26,7 @@ define('BACKUPDB_CRON_LAST', 'AutoBackupDB.last');
 array_insert($GLOBALS['BE_MOD']['system'], -1, array
 (
 	'BackupDB' => array (
-		'callback'   => 'BackupDB\ModuleBackupDB',
-		'stylesheet' => 'system/modules/BackupDB/assets/styles.min.css',
+		'callback'   => 'Softleister\BackupDB\ModuleBackupDB',
+		'stylesheet' => 'bundles/softleisterbackupdb/styles.min.css',
 	)
 ));
-

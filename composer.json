@@ -14,32 +14,36 @@
 		}
 	],
 	"support":{
-		"issues":"https://github.com/do-while/contao-BackupDB/issues",
-		"wiki":"http://de.contaowiki.org/BackupDB",
-		"source":"https://github.com/do-while/contao-BackupDB"
+			"issues":"https://github.com/do-while/contao-BackupDB/issues",
+			"wiki":"http://de.contaowiki.org/BackupDB",
+			"source":"https://github.com/do-while/contao-BackupDB"
 	},
 	"require": {
-		"contao/core": "~4.4",
-		"contao-community-alliance/composer-plugin":"~3.0"
+			"php": ">=5.6.0",
+			"contao/core-bundle": ">=4.4.0,<5.0"
 	},
 	"replace": {
-		"contao-legacy/BackupDB": "*"
+			"contao-legacy/BackupDB": "*"
 	},
 	"autoload":{
-		"classmap":["system/"],
-		"psr-4": {
-			"do-while\\contao-BackupDB\\": "system/modules/BackupDB/src/"
-		}
+			"classmap": [
+					"src/Resources/contao/"
+			],
+			"exclude-from-classmap": [
+					"src/Resources/contao/cache/",
+					"src/Resources/contao/config/",
+					"src/Resources/contao/dca/",
+					"src/Resources/contao/languages/",
+					"src/Resources/contao/templates/",
+			],
+			"psr-4": {
+					"Softleister\\BackupDB\\": "src/"
+			}
 	},
 	"extra": {
-		"contao": {
-			"sources": {
-				"system/modules/BackupDB": "system/modules/BackupDB"
+			"branch-alias": {
+					"dev-master": "4.4.x-dev",
+					"dev-dev": "4.4.x-dev"
 			}
-		},
-		"branch-alias": {
-			"dev-master": "4.4.x-dev",
-			"dev-dev": "4.4.x-dev"
-		}
 	}
 }

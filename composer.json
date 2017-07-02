@@ -1,49 +1,47 @@
 {
-	"name": "do-while/contao-BackupDB",
-	"description":"Backup of the Contao database, automatic backup, creation of website templates for the Install Tool",
-	"keywords":["contao", "widget", "backup", "website template"],
-	"type": "contao-bundle",
-	"homepage":"https://www.softleister.de",
-	"license":"LGPL-3.0+",
-	"authors":[
-		{
-			"name": "Hagen Klemp",
-			"email": "info@softleister.de",
-			"homepage": "https://www.softleister.de",
-			"role":"Project leader"
-		}
-	],
-	"support":{
-			"issues":"https://github.com/do-while/contao-BackupDB/issues",
-			"wiki":"http://de.contaowiki.org/BackupDB",
-			"source":"https://github.com/do-while/contao-BackupDB"
-	},
-	"require": {
-			"php": ">=5.6.0",
-			"contao/core-bundle": ">=4.4.0,<5.0"
-	},
-	"replace": {
-			"contao-legacy/BackupDB": "*"
-	},
-	"autoload":{
-			"classmap": [
-					"src/Resources/contao/"
-			],
-			"exclude-from-classmap": [
-					"src/Resources/contao/cache/",
-					"src/Resources/contao/config/",
-					"src/Resources/contao/dca/",
-					"src/Resources/contao/languages/",
-					"src/Resources/contao/templates/",
-			],
-			"psr-4": {
-					"Softleister\\BackupDB\\": "src/"
-			}
-	},
-	"extra": {
-			"branch-alias": {
-					"dev-master": "4.4.x-dev",
-					"dev-dev": "4.4.x-dev"
-			}
-	}
+    "name": "do-while/contao-BackupDB",
+    "description": "Backup of the Contao database, automatic backup, creation of website templates for the Install Tool",
+    "keywords": ["contao", "widget", "backup", "website template"],
+    "type": "contao-bundle",
+    "homepage": "https://www.softleister.de",
+    "license": "LGPL-3.0+",
+    "authors": [{
+        "name": "Hagen Klemp",
+        "email": "info@softleister.de",
+        "homepage": "https://www.softleister.de",
+        "role": "Project leader"
+    }],
+    "support": {
+        "issues": "https://github.com/do-while/contao-BackupDB/issues",
+        "wiki": "http://de.contaowiki.org/BackupDB",
+        "source": "https://github.com/do-while/contao-BackupDB"
+    },
+    "require": {
+        "php": ">=5.6.0",
+        "contao/core-bundle": ">=4.4.0,<5.0"
+    },
+    "replace": {
+        "contao-legacy/BackupDB": "*"
+    },
+    "autoload": {
+        "classmap": [
+            "src/Resources/contao/"
+        ],
+        "exclude-from-classmap": [
+            "src/Resources/contao/cache/",
+            "src/Resources/contao/config/",
+            "src/Resources/contao/dca/",
+            "src/Resources/contao/languages/",
+            "src/Resources/contao/templates/"
+        ],
+        "psr-4": {
+            "Softleister\\BackupDB\\": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "4.4.x-dev",
+            "dev-dev": "4.4.x-dev"
+        }
+    }
 }

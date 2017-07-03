@@ -196,18 +196,19 @@ class BackupDbCommon extends \Backend
 
                 //--- Index-Einträge ---
                 if( isset($field['index']) && !empty($field['index_fields']) ) {
-                    $index_fields = implode( '`, `', $field['index_fields'] );
+                    $index_fields = '`' . implode( '`, `', $field['index_fields'] ) . '`';
+                    $index_fields = str_replace(array('(', ')`'), array('`(', ')'), $index_fields );
 
                     switch( $field['index'] ) {
                         case 'UNIQUE':  if( $name == 'PRIMARY' ) {
-                                            $result[$table]['TABLE_CREATE_DEFINITIONS'][$name] = 'PRIMARY KEY  (`'.$index_fields.'`)';
+                                            $result[$table]['TABLE_CREATE_DEFINITIONS'][$name] = 'PRIMARY KEY  ('.$index_fields.')';
                                         }
                                         else {
-                                            $result[$table]['TABLE_CREATE_DEFINITIONS'][$name] = 'UNIQUE KEY `'.$name.'` (`'.$index_fields.'`)';
+                                            $result[$table]['TABLE_CREATE_DEFINITIONS'][$name] = 'UNIQUE KEY `'.$name.'` ('.$index_fields.')';
                                         }
                                         break;
 
-                        default:        $result[$table]['TABLE_CREATE_DEFINITIONS'][$name] = (isset($keys[$name]) ? $keys[$name] : '') . 'KEY `'.$name.'` (`'.$index_fields.'`)';
+                        default:        $result[$table]['TABLE_CREATE_DEFINITIONS'][$name] = (isset($keys[$name]) ? $keys[$name] : '') . 'KEY `'.$name.'` ('.$index_fields.')';
                                         break;
                     }
                     unset( $field['index_fields'] );

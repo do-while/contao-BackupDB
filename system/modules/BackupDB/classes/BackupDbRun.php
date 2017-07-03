@@ -38,7 +38,7 @@ class BackupDbRun extends \Backend
     {
         @set_time_limit( 600 );
         $user = \BackendUser::getInstance();
-        
+
         $filepath = $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB';
         $pfad = TL_ROOT . '/' . $filepath;
         if( file_exists( $pfad . '/' . BACKUPDB_RUN_LAST ) ) {

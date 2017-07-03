@@ -54,10 +54,15 @@ class BackupDbCommon extends \Backend
     {
         $objDB = \Database::getInstance();
 
-        $arrExtcludeExt30 = array (         // Module aus der Standard-Installation >= 3.0
-                                "calendar", "comments", "core", "devtools", "faq", "listing",
-                                "news", "newsletter", "repository", "BackupDB"
+        $arrExtcludeExt44 = array (         // Module aus der Standard-Installation >= 4.4
+                                'FrameworkBundle', 'SecurityBundle', 'TwigBundle', 'MonologBundle', 'SwiftmailerBundle',
+                                'DoctrineBundle', 'DoctrineCacheBundle', 'SensioFrameworkExtraBundle', 'LexikMaintenanceBundle',
+                                'NelmioCorsBundle', 'NelmioSecurityBundle', 'ContaoManagerBundle', 'KnpMenuBundle', 'KnpTimeBundle',
+                                'HeaderReplayBundle', 'ContaoCoreBundle', 'ContaoCalendarBundle', 'ContaoCommentsBundle',
+                                'ContaoFaqBundle', 'ContaoListingBundle', 'ContaoInstallationBundle', 'ContaoNewsBundle',
+                                'ContaoNewsletterBundle'
                             );
+
         $instExt = array();
 
         $result = "#================================================================================\r\n"
@@ -77,42 +82,21 @@ class BackupDbCommon extends \Backend
                 . "#-----------------------------------------------------\r\n"
                 . "# Contao Version " . VERSION . "." . BUILD . "\r\n"
                 . "# The following modules must be installed:\r\n"
+                . "# For the versions of modules refer to composer.lock\r\n"
                 . "#-----------------------------------------------------\r\n";
 
-        //--- über ER2 installierte Erweiterungen ---
-        if( $objDB->tableExists('tl_repository_installs') ) {
+        //--- installierte Erweiterungen ---
+        $bundles = \System::getContainer()->getParameter('kernel.bundles');         // Installierte Module lesen
+        unset( $bundles['BackupDB'] );                                              // BackupDB ist für Restore nicht notwendig
+        $bundles = array_diff_assoc( array_keys( $bundles ), $arrExtcludeExt44 );   // Core-Module herausnehmen
+        asort( $bundles );                                                          // sortieren
+        $bundles = array_values( $bundles );                                        // Index neu binden
 
-            $sql = "SELECT i.extension, i.version, i.build, f.filename FROM tl_repository_installs as i, tl_repository_instfiles as f WHERE i.id=f.pid AND LEFT(f.filename,15)='system/modules/' GROUP BY i.extension";
-            $objData = $objDB->executeUncached( $sql );
-
-            while( $objData->next() ) {
-                if( $objData->extension === 'BackupDB' ) continue;          // BackupDB für Restore nicht notwendig
-
-                $result .= '#   - ' . sprintf('%-28s', $objData->extension) . ': Version ' . BackupDbCommon::getVersionInfo( $objData->version ) . ', Build ' . $objData->build . "\r\n";
-                $arrfile = explode('/', $objData->filename );
-                $instExt[] = strtolower( $arrfile[2] );
-            }
-        }
-
-        $modullist = '';
-        $handle = opendir( TL_ROOT . '/system/modules' );
-        while( ($file = readdir( $handle )) !== false ) {
-            if( substr( $file, 0, 1 ) == "." ) continue;                                // . und .. ausblenden
-
-            if( isset($instExt) && in_array( strtolower($file), $instExt ) ) continue;  // keine Files, die schon im Repository stehen
-            if( in_array($file, $arrExtcludeExt30) ) continue;                          // Core-Erweiterungen ausblenden
-
-            $modullist .= "#   - $file\r\n";
-        }
-        closedir( $handle );
-
-        if( $modullist != '' ) {
-            $result .= $modullist;
+        if( empty( $bundles ) ) {
+          $result .= "#   == none ==\r\n";
         }
         else {
-            if( !count($instExt) ) {
-                $result .= "#   == none ==\r\n";
-            }
+          foreach( $bundles as $ext ) $result .= "#   - $ext\r\n";
         }
 
         $result .= "#\r\n"

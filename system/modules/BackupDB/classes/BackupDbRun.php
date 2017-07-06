@@ -81,6 +81,7 @@ class BackupDbRun extends \Backend
             $objZip->addFile( $filepath . '/' . $tmpdatei->name, $tmpdatei->name );
             $objZip->addFile( 'composer.json' );
             $objZip->addFile( 'composer.lock' );
+            $objZip->addString( BackupDbCommon::get_symlinks(), 'restoreSymlinks.php', time() );    // Symlink-Recovery
             $objZip->close();
         }
 

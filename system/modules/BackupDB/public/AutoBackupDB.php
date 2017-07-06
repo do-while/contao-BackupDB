@@ -150,6 +150,7 @@ class AutoBackupDb extends \Backend             // Datenbank ist bereits geöffn
             $objZip->addFile( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/AutoBackupDB-1.sql' );
             $objZip->addFile( 'composer.json' );
             $objZip->addFile( 'composer.lock' );
+            $objZip->addString( BackupDbCommon::get_symlinks(), 'restoreSymlinks.php', time() );    // Symlink-Recovery
             $objZip->close();
             unlink( $pfad . '/AutoBackupDB-1.sql' );
         }

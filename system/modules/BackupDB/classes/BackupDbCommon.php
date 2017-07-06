@@ -22,6 +22,9 @@ namespace Softleister\BackupDB;
 //-------------------------------------------------------------------
 class BackupDbCommon extends \Backend
 {
+    // Variable für Symlink-Array
+    protected static $arrSymlinks;
+    
     //---------------------------------------
     // Extension-Versions-Info
     //---------------------------------------
@@ -80,9 +83,13 @@ class BackupDbCommon extends \Backend
 
                 //--- Installierte Module unter /system/modules auflisten ---
                 . "#-----------------------------------------------------\r\n"
+                . "# If you save the backup in ZIP file, a file restoreSymlinks.php\r\n"
+                . "# is also in the ZIP. See the file for more information\r\n"
+                . "#-----------------------------------------------------\r\n"
                 . "# Contao Version " . VERSION . "." . BUILD . "\r\n"
                 . "# The following modules must be installed:\r\n"
                 . "# For the versions of modules refer to composer.lock\r\n"
+                . "#\r\n"
                 . "#-----------------------------------------------------\r\n";
 
         //--- installierte Erweiterungen ---
@@ -341,6 +348,70 @@ class BackupDbCommon extends \Backend
         return $arrBlacklist;
     }
 
+
+    //------------------------------------------------
+    //  get_symlinks: Symlinks suchen und Datei erstellen
+    //------------------------------------------------
+    public static function get_symlinks( )
+    {
+        Self::$arrSymlinks = array();               // leeres Array
+        $url = TL_ROOT . '/';
+
+        Self::iterateDir( $url );          // Symlinks suchen
+        asort( Self::$arrSymlinks );                // alphabetisch sortieren
+
+        $links = array();
+        foreach( Self::$arrSymlinks as $link ) {
+            $links[] = array( 'link'=>substr( $link, strlen( $url ) ), 'target'=>readlink( $link ) );
+        }
+        
+        $script = "<?php\n\n"
+                . "// This file is part of a backup, included in the zip archive.\n"
+                . "// Place the restoreSymlinks.php in the web directory of your\n"
+                . "// contao 4 and call http://domain.tld/restoreSymlinks.php\n\n"
+                . '$arrSymlinks = deserialize(\'' . serialize( $links ) . "');\n\n"
+                . "// Check current position\n"
+                . 'if( !is_dir( "../web" ) || !file_exists( "./app.php" ) ) {' . "\n"
+                . "\t" . 'die( "The file is not in the correct directory" );' . "\n"
+                . "}\n\n"
+                . '$rootpath = getcwd();' . "\n"
+                . '$rootpath = substr( $rootpath, 0 , strlen($rootpath) - 3 );' . "\n\n"
+                . "// Restore the symlinks\n"
+                . '$errors = 0;' . "\n"
+                . 'foreach( $arrSymlink as $link ) {' . "\n"
+                . "\t" . 'if( file_exists( $rootpath . $link["link"] ) && !is_link( $rootpath . $link["link"] ) ) {' . "\n"
+                . "\t\t" . 'rename( $rootpath . $link["link"], $rootpath . $link["link"] . ".removed" );' . "\n"
+                . "\t" . '}' . "\n"
+                . "\t" . 'if( is_link( $rootpath . $link["link"] ) ) continue;' . "\n\n"
+                . "\t" . 'if( !symlink( $link["target"], $rootpath . $link["link"] ) ) {' . "\n"
+                . "\t\t" . 'echo "Symlink failed: " . $rootpath . $link["link"] . "<br>";' . "\n"
+                . "\t\t" . '$errors++;' . "\n"
+                . "\t" . '}' . "\n"
+                . '}' . "\n\n"
+                . 'echo "Program terminated with " . $errors . " errors<br><br>PLEASE DELETE THE SCRIPT FROM THE DIRECTORY NOW!<br>";' . "\n\n";
+                
+        return $script;
+    }
+    
+
+    //------------------------------------------------
+    //  iterateDir: rekusives Suchen nach Symlinks
+    //------------------------------------------------
+    public static function iterateDir( $startPath )
+    {
+        foreach( new \DirectoryIterator( $startPath ) as $objItem ) {
+            if( $objItem->isLink( ) ) {
+                Self::$arrSymlinks[] = $objItem->getPath( ) . '/' . $objItem->getFilename( );
+                continue;
+            }
+            if($objItem->isDir( ) ) {
+                if( !$objItem->isDot( ) ) Self::iterateDir( $objItem->getPathname(), $arrResult );
+                continue;
+            }
+            if( $objItem->isLink() ) Self::$arrSymlinks[] = $objItem->getPath( ) . '/' . $objItem->getFilename( );
+        }
+        return;
+    }
 
     //---------------------------------------
 }

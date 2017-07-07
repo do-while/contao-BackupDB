@@ -24,7 +24,7 @@ class BackupDbCommon extends \Backend
 {
     // Variable für Symlink-Array
     protected static $arrSymlinks;
-    
+
     //---------------------------------------
     // Extension-Versions-Info
     //---------------------------------------
@@ -364,12 +364,12 @@ class BackupDbCommon extends \Backend
         foreach( Self::$arrSymlinks as $link ) {
             $links[] = array( 'link'=>substr( $link, strlen( $url ) ), 'target'=>readlink( $link ) );
         }
-        
+
         $script = "<?php\n\n"
                 . "// This file is part of a backup, included in the zip archive.\n"
                 . "// Place the restoreSymlinks.php in the web directory of your\n"
                 . "// contao 4 and call http://domain.tld/restoreSymlinks.php\n\n"
-                . '$arrSymlinks = deserialize(\'' . serialize( $links ) . "');\n\n"
+                . '$arrSymlinks = unserialize(\'' . serialize( $links ) . "');\n\n"
                 . "// Check current position\n"
                 . 'if( !is_dir( "../web" ) || !file_exists( "./app.php" ) ) {' . "\n"
                 . "\t" . 'die( "The file is not in the correct directory" );' . "\n"
@@ -389,10 +389,10 @@ class BackupDbCommon extends \Backend
                 . "\t" . '}' . "\n"
                 . '}' . "\n\n"
                 . 'echo "Program terminated with " . $errors . " errors<br><br>PLEASE DELETE THE SCRIPT FROM THE DIRECTORY NOW!<br>";' . "\n\n";
-                
+
         return $script;
     }
-    
+
 
     //------------------------------------------------
     //  iterateDir: rekusives Suchen nach Symlinks

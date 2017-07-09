@@ -1,5 +1,5 @@
 {
-    "name": "do-while/contao-BackupDB",
+    "name": "do-while/contao-BackupDB-bundle",
     "description": "Backup of the Contao database, automatic backup, creation of website templates for the Install Tool",
     "keywords": ["contao", "widget", "backup", "website template"],
     "type": "contao-bundle",

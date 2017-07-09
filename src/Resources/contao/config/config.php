@@ -11,7 +11,7 @@
  * @licence     LGPL
  */
 
-define('BACKUPDB_VERSION', '4.4');
+define('BACKUPDB_VERSION', '0.1');
 define('BACKUPDB_BUILD'  , '0');
 
 define('BACKUPDB_RUN_LAST',  'RunBackupDB.last');

@@ -34,7 +34,7 @@ use Softleister\BackupDB\BackupDbCommon;
  * Set the script name
  */
 if( !defined('TL_SCRIPT') ) {
-    define('TL_SCRIPT', 'system/modules/BackupDB/public/AutoBackupDB.php');
+    define('TL_SCRIPT', 'bundles/softleisterbackupdb/AutoBackupDB.php');
 }
 
 

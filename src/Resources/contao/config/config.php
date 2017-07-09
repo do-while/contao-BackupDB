@@ -11,7 +11,7 @@
  * @licence     LGPL
  */
 
-define('BACKUPDB_VERSION', '4.4');
+define('BACKUPDB_VERSION', '0.1');
 define('BACKUPDB_BUILD'  , '0');
 
 define('BACKUPDB_RUN_LAST',  'RunBackupDB.last');
@@ -26,8 +26,7 @@ define('BACKUPDB_CRON_LAST', 'AutoBackupDB.last');
 array_insert($GLOBALS['BE_MOD']['system'], -1, array
 (
 	'BackupDB' => array (
-		'callback'   => 'BackupDB\ModuleBackupDB',
-		'stylesheet' => 'system/modules/BackupDB/assets/styles.min.css',
+		'callback'   => 'Softleister\BackupDB\ModuleBackupDB',
+		'stylesheet' => 'bundles/softleisterbackupdb/styles.min.css',
 	)
 ));
-

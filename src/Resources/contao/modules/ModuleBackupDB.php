@@ -105,7 +105,7 @@ class ModuleBackupDB extends \BackendModule
 
         //--- Footer ---
         $this->Template->backupdb_icons = 'Icons from <a href="https://icons8.com" target="_blank">Icons8</a> (<a href="https://creativecommons.org/licenses/by-nd/3.0/" target="_blank">CC BY-ND 3.0</a>)';
-        $this->Template->backupdb_version = 'BackupDB Version ' . BACKUPDB_VERSION . '.' . BACKUPDB_BUILD;
+        $this->Template->backupdb_version = '<a href="https://github.com/do-while/contao-BackupDB" target="_blank">BackupDB Version ' . BACKUPDB_VERSION . '.' . BACKUPDB_BUILD . '</a>';
     }
 
 

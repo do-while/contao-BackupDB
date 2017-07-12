@@ -1,0 +1,3 @@
+backupdb_autobackup:
+    resource: "@SoftleisterBackupDbBundle/Controller"
+type: annotation

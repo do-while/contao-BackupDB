@@ -28,31 +28,6 @@ class BackupDbCommon extends \Backend
     //---------------------------------------
     // Extension-Versions-Info
     //---------------------------------------
-    public static function getVersionInfo( $ver )
-    {
-        $version = floor( $ver / 10000000 ) . '.';              // Hauptversion
-        $version .= floor(($ver % 10000000) / 10000) . '.';     // Subversion
-        $version .= floor(($ver % 10000) / 10 );                // Build
-        switch( $ver % 10 ) {
-            case 0: $version .= ' alpha1';  break;
-            case 1: $version .= ' alpha2';  break;
-            case 2: $version .= ' alpha3';  break;
-            case 3: $version .= ' beta1';   break;
-            case 4: $version .= ' beta2';   break;
-            case 5: $version .= ' beta3';   break;
-            case 6: $version .= ' rc1';     break;
-            case 7: $version .= ' rc2';     break;
-            case 8: $version .= ' rc3';     break;
-            case 9: $version .= ' stable';  break;
-        }
-
-        return $version;
-    }
-
-
-    //---------------------------------------
-    // Extension-Versions-Info
-    //---------------------------------------
     public static function getHeaderInfo( $sql_mode, $savedby = 'Saved by Cron' )
     {
         $objDB = \Database::getInstance();
@@ -378,7 +353,7 @@ class BackupDbCommon extends \Backend
                 . '$rootpath = substr( $rootpath, 0 , strlen($rootpath) - 3 );' . "\n\n"
                 . "// Restore the symlinks\n"
                 . '$errors = 0;' . "\n"
-                . 'foreach( $arrSymlink as $link ) {' . "\n"
+                . 'foreach( $arrSymlinks as $link ) {' . "\n"
                 . "\t" . 'if( file_exists( $rootpath . $link["link"] ) && !is_link( $rootpath . $link["link"] ) ) {' . "\n"
                 . "\t\t" . 'rename( $rootpath . $link["link"], $rootpath . $link["link"] . ".removed" );' . "\n"
                 . "\t" . '}' . "\n"

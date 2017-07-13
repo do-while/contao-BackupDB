@@ -10,7 +10,7 @@
 
 namespace Softleister\BackupDbBundle\Controller;
 
-use Softleister\BackupDbBundle\AutoBackupDB;
+use Softleister\BackupDB\AutoBackupDB;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,7 +36,7 @@ class BackupDbController extends Controller
     {
         $this->container->get('contao.framework')->initialize();
 
-        $controller = new autoBackupDB();
+        $controller = new \Softleister\BackupDB\AutoBackupDb();
 
         return $controller->run();
     }

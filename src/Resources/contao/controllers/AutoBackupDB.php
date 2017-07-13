@@ -45,6 +45,8 @@ class AutoBackupDb extends \Frontend
     {
         @set_time_limit( 600 );
 
+return 'Hallo';
+
         //--- alten Zeitstempel löschen ---
         $pfad = TL_ROOT . '/' . $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB';
         if( file_exists( $pfad . '/' . BACKUPDB_CRON_LAST ) ) {

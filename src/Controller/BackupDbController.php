@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @copyright  Softleister 2007-2017
  * @author     Softleister <info@softleister.de>
  *
- * @Route("/autobackup", defaults={"_scope" = "frontend", "_token_check" = false})
+ * @Route("/BackupDB", defaults={"_scope" = "frontend", "_token_check" = false})
  */
 class BackupDbController extends Controller
 {
@@ -36,10 +36,8 @@ class BackupDbController extends Controller
     {
         $this->container->get('contao.framework')->initialize();
 
-        return 'Läuft';
-        
-//        $controller = new autoBackupDB();
+        $controller = new autoBackupDB();
 
-//        return $controller->run();
+        return $controller->run();
     }
 }

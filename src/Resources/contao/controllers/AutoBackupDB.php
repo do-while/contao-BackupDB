@@ -45,15 +45,13 @@ class AutoBackupDb extends \Frontend
     {
         @set_time_limit( 600 );
 
-return new Response( 'Hallo' );
-
         //--- alten Zeitstempel löschen ---
         $pfad = TL_ROOT . '/' . $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB';
         if( file_exists( $pfad . '/' . BACKUPDB_CRON_LAST ) ) {
             unlink( $pfad . '/' . BACKUPDB_CRON_LAST );             // LastRun-Datei löschen
         }
 
-        echo 'Starting BackupDB ...<br>';
+        $result = 'Starting BackupDB ...<br>';
 
         //--- Datei-Extension festlegen ---
         $ext = '.sql';
@@ -109,7 +107,7 @@ return new Response( 'Hallo' );
                      . "\r\n# --- End of Backup ---\r\n" );           // Endekennung
         $datei->close();
 
-        echo 'End of Backup<br>';
+        $result .= 'End of Backup<br>';
 
         //--- Wenn Komprimierung gewünscht, ZIP erstellen ---
         if( $ext === '.zip' ) {
@@ -144,6 +142,8 @@ return new Response( 'Hallo' );
         // Update the hash of the target folder
         $objFile = \Dbafs::addResource( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/' . BACKUPDB_CRON_LAST );    // Datei in der Dateiverwaltung eintragen
         \Dbafs::updateFolderHashes( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/' );
+
+        return new Response( $result );
     }
 }
 

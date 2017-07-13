@@ -112,7 +112,7 @@ class AutoBackupDb extends \Frontend
         //--- Wenn Komprimierung gewünscht, ZIP erstellen ---
         if( $ext === '.zip' ) {
             $objZip = new \ZipWriter( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/AutoBackupDB-1.zip' );
-            $objZip->addFile( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/AutoBackupDB-1.sql' );
+            $objZip->addFile( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/AutoBackupDB-1.sql', 'AutoBackupDB-1.sql' );
             $objZip->addFile( 'composer.json' );
             $objZip->addFile( 'composer.lock' );
             $objZip->addString( BackupDbCommon::get_symlinks(), 'restoreSymlinks.php', time() );    // Symlink-Recovery

@@ -1,14 +1,11 @@
 <?php
 
 /**
- * Contao Open Source CMS
- *
- * Copyright (c) 2005-2015 Leo Feyer
- *
- * @package     BackupDB - Database backup
- * @copyright   Softleister 2007-2017
- * @author      Softleister <info@softleister.de>
- * @licence     LGPL
+ * @copyright  Softleister 2007-2017
+ * @author     Softleister <info@softleister.de>
+ * @package    BackupDB - Database backup
+ * @license    LGPL
+ * @see	       https://github.com/do-while/contao-BackupDB
  */
 
 
@@ -21,7 +18,7 @@ $GLOBALS['TL_LANG']['tl_settings']['WsTemplatePath']     = array('Alternative pa
 $GLOBALS['TL_LANG']['tl_settings']['backupdb_blacklist'] = array('Blacklist for backups', 'Comma-separated list of tables for which the data is NOT being backed up. For example <em>tl_lock, tl_log, tl_search, tl_search_index, tl_session, tl_undo, tl_version</em> are not essential for recovery.');
 $GLOBALS['TL_LANG']['tl_settings']['backupdb_sendmail']  = array('E-mail notification after AutoBackup', 'Sends a mail after a successful backup to the administrator.');
 $GLOBALS['TL_LANG']['tl_settings']['backupdb_attmail']   = array('Append AutoBackup file', 'Append the backup file to the notification e-mail.');
-$GLOBALS['TL_LANG']['tl_settings']['backupdb_zip']       = array('Compress backup', 'The ZIP file also contains the <em>composer.json</em> and <em>composer.lock</em> files');
+$GLOBALS['TL_LANG']['tl_settings']['backupdb_zip']       = array('Compress backup with restore informations', 'The ZIP file also contains the <em>composer.json</em>, <em>composer.lock</em> and a PHP script for the restore of symlinks.');
 
 /**
  * Legends

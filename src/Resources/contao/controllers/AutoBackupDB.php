@@ -1,75 +1,41 @@
 <?php
 
 /**
- * Contao Open Source CMS
- *
- * Copyright (c) 2005-2015 Leo Feyer
- *
- * @package     BackupDB - Database backup
- * @copyright   Softleister 2007-2017
- * @author      Softleister <info@softleister.de>
- * @licence     LGPL
+ * @copyright  Softleister 2007-2017
+ * @author     Softleister <info@softleister.de>
+ * @package    BackupDB - Database backup
+ * @license    LGPL
+ * @see        https://github.com/do-while/contao-BackupDB
  */
 
-/**
- * Run in a custom namespace, so the class can be replaced
- */
 namespace Softleister\BackupDB;
 
+use Symfony\Component\HttpFoundation\Response;
 use Softleister\BackupDB\BackupDbCommon;
+use Psr\Log\LogLevel;
+use Contao\CoreBundle\Monolog\ContaoContext;
 
 //-------------------------------------------------------------------
-// AutoBackupDB.php Backup Contao-Datenbank mit Cron-Job
+// AutoBackupDB.php Backup Contao-Datenbank mittels Cron-Job
 //
 // Copyright (c) 2007-2017 by Softleister
-//
-// Der Cron-Job nimmt diese Datei als Include-Datei für CronController.php
-// aktueller Pfad bei Ausführung: system/modules/cron
-//
-//-------------------------------------------------------------------
-//  Systeminitialisierung, wenn direkt aufgerufen
 //-------------------------------------------------------------------
 
-/**
- * Set the script name
- */
-if( !defined('TL_SCRIPT') ) {
-    define('TL_SCRIPT', 'bundles/softleisterbackupdb/AutoBackupDB.php');
-}
-
-
-if( !defined('TL_MODE') ) {
-    define('TL_MODE', 'BE');
-
-    // search the initialize.php // Danke an xtra
-    $dir = dirname( $_SERVER['SCRIPT_FILENAME'] );
-
-    while( ($dir != '.') && ($dir != '/') && !is_file($dir . '/system/initialize.php') ) {
-        $dir = dirname( $dir );
-    }
-
-    if( !is_file( $dir . '/system/initialize.php' ) ) {
-        echo 'Could not find initialize.php, where is Contao?';
-        exit;
-    }
-
-    require_once( $dir . '/system/initialize.php' );
-    define('DIRECT_CALL', 1 );
-}
-
-//-------------------------------------------------------------------
-//  Backend um die Backup-Funktionen erweitern
-//-------------------------------------------------------------------
-class AutoBackupDb extends \Backend             // Datenbank ist bereits geöffnet
+class AutoBackupDb extends \Frontend
 {
     //-------------------------
     //  Constructor
     //-------------------------
     public function __construct( )
     {
-        parent::__construct();                      // Construktor Backend ausführen
-        $user = \BackendUser::getInstance();        // Backend-User
-        $user->authenticate();
+        parent::__construct( );                         // Construktor Backend ausführen
+
+        if( !defined( 'BE_USER_LOGGED_IN' ) ) {
+            define( 'BE_USER_LOGGED_IN', false );
+        }
+        if( !defined( 'FE_USER_LOGGED_IN' ) ) {
+            define( 'FE_USER_LOGGED_IN', false );
+        }
     }
 
     //-------------------------
@@ -78,7 +44,6 @@ class AutoBackupDb extends \Backend             // Datenbank ist bereits geöffn
     public function run( )
     {
         @set_time_limit( 600 );
-        \System::loadLanguageFile('tl_backupdb');                   // Sprachenfiles laden
 
         //--- alten Zeitstempel löschen ---
         $pfad = TL_ROOT . '/' . $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB';
@@ -86,7 +51,7 @@ class AutoBackupDb extends \Backend             // Datenbank ist bereits geöffn
             unlink( $pfad . '/' . BACKUPDB_CRON_LAST );             // LastRun-Datei löschen
         }
 
-        echo 'Starting BackupDB ...<br>';
+        $result = 'Starting BackupDB ...<br>';
 
         //--- Datei-Extension festlegen ---
         $ext = '.sql';
@@ -142,12 +107,12 @@ class AutoBackupDb extends \Backend             // Datenbank ist bereits geöffn
                      . "\r\n# --- End of Backup ---\r\n" );           // Endekennung
         $datei->close();
 
-        echo 'End of Backup<br>';
+        $result .= 'End of Backup<br>';
 
         //--- Wenn Komprimierung gewünscht, ZIP erstellen ---
         if( $ext === '.zip' ) {
             $objZip = new \ZipWriter( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/AutoBackupDB-1.zip' );
-            $objZip->addFile( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/AutoBackupDB-1.sql' );
+            $objZip->addFile( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/AutoBackupDB-1.sql', 'AutoBackupDB-1.sql' );
             $objZip->addFile( 'composer.json' );
             $objZip->addFile( 'composer.lock' );
             $objZip->addString( BackupDbCommon::get_symlinks(), 'restoreSymlinks.php', time() );    // Symlink-Recovery
@@ -177,14 +142,9 @@ class AutoBackupDb extends \Backend             // Datenbank ist bereits geöffn
         // Update the hash of the target folder
         $objFile = \Dbafs::addResource( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/' . BACKUPDB_CRON_LAST );    // Datei in der Dateiverwaltung eintragen
         \Dbafs::updateFolderHashes( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/' );
+
+        return new Response( $result );
     }
-
 }
-
-//-------------------------------------------------------------------
-//  Programmstart
-//-------------------------------------------------------------------
-$objBackupDB = new AutoBackupDB( );
-$objBackupDB->run( );
 
 //-------------------------------------------------------------------

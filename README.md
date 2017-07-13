@@ -5,7 +5,7 @@
 Dieses Modul erweitert den Systembereich im Backend.
 
 
-.
+___
 
 
 Deutsches Handbuch siehe<br>
@@ -20,8 +20,8 @@ English Manual see<br>
 1.0.0 stable - Version für Contao ab Version 4.4 LTS
 
 
-**Problem melden | Report Problem:**
-(https://github.com/do-while/contao-BackupDB/issues)
+**Problem melden | Report Problem:**<br>
+https://github.com/do-while/contao-BackupDB/issues
 
 
 

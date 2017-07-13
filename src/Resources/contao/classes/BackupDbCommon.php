@@ -1,14 +1,11 @@
 <?php
 
 /**
- * Contao Open Source CMS
- *
- * Copyright (c) 2005-2015 Leo Feyer
- *
- * @package     BackupDB - Database backup
- * @copyright   Softleister 2007-2017
- * @author      Softleister <info@softleister.de>
- * @licence     LGPL
+ * @copyright  Softleister 2007-2017
+ * @author     Softleister <info@softleister.de>
+ * @package    BackupDB - Database backup
+ * @license    LGPL
+ * @see	       https://github.com/do-while/contao-BackupDB
  */
 
 /**
@@ -38,7 +35,7 @@ class BackupDbCommon extends \Backend
                                 'NelmioCorsBundle', 'NelmioSecurityBundle', 'ContaoManagerBundle', 'KnpMenuBundle', 'KnpTimeBundle',
                                 'HeaderReplayBundle', 'ContaoCoreBundle', 'ContaoCalendarBundle', 'ContaoCommentsBundle',
                                 'ContaoFaqBundle', 'ContaoListingBundle', 'ContaoInstallationBundle', 'ContaoNewsBundle',
-                                'ContaoNewsletterBundle'
+                                'ContaoNewsletterBundle', 'SoftleisterBackupDbBundle'
                             );
 
         $instExt = array();
@@ -49,11 +46,11 @@ class BackupDbCommon extends \Backend
                 . "# " . $savedby . "\r\n"
                 . "# Time stamp       : " . date( "Y-m-d" ) . " at " . date( "H:i:s" ) . "\r\n"
                 . "#\r\n"
-                . "# Contao Extension : BackupDB, Version " . BACKUPDB_VERSION . '.' . BACKUPDB_BUILD . "\r\n"
+                . "# Contao Extension : BackupDbBundle, Version " . BACKUPDB_VERSION . '.' . BACKUPDB_BUILD . "\r\n"
                 . "# Copyright        : Softleister (www.softleister.de)\r\n"
                 . "# Licence          : LGPL\r\n"
                 . "#\r\n"
-                . "# Visit Contao project page https://contao.org for more information\r\n"
+                . "# Visit https://github.com/do-while/contao-BackupDB for more information\r\n"
                 . "#\r\n"
 
                 //--- Installierte Module unter /system/modules auflisten ---
@@ -64,15 +61,13 @@ class BackupDbCommon extends \Backend
                 . "# Contao Version " . VERSION . "." . BUILD . "\r\n"
                 . "# The following modules must be installed:\r\n"
                 . "# For the versions of modules refer to composer.lock\r\n"
-                . "#\r\n"
-                . "#-----------------------------------------------------\r\n";
+                . "#\r\n";
 
         //--- installierte Erweiterungen ---
-        $bundles = \System::getContainer()->getParameter('kernel.bundles');         // Installierte Module lesen
-        unset( $bundles['BackupDB'] );                                              // BackupDB ist für Restore nicht notwendig
-        $bundles = array_diff_assoc( array_keys( $bundles ), $arrExtcludeExt44 );   // Core-Module herausnehmen
-        asort( $bundles );                                                          // sortieren
-        $bundles = array_values( $bundles );                                        // Index neu binden
+        $arrBundles = array_keys( \System::getContainer()->getParameter('kernel.bundles') );    // Installierte Module lesen
+        $arrBundles = array_diff( $arrBundles, $arrExtcludeExt44 );                             // Core-Module herausnehmen
+        asort( $arrBundles );                                                                   // sortieren
+        $bundles = array_values( $arrBundles );                                                 // Index neu binden
 
         if( empty( $bundles ) ) {
           $result .= "#   == none ==\r\n";
@@ -363,7 +358,7 @@ class BackupDbCommon extends \Backend
                 . "\t\t" . '$errors++;' . "\n"
                 . "\t" . '}' . "\n"
                 . '}' . "\n\n"
-                . 'echo "Program terminated with " . $errors . " errors<br><br>PLEASE DELETE THE SCRIPT FROM THE DIRECTORY NOW!<br>";' . "\n\n";
+                . 'echo "Program terminated with " . $errors . " errors<br><br>PLEASE DELETE THE SCRIPT FROM THE DIRECTORY NOW!<br>CLEAR THE SYMFONY-CACHE, e.g. with Contao Manager<br>";' . "\n\n";
 
         return $script;
     }

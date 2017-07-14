@@ -25,15 +25,15 @@ class BackupDbCommon extends \Backend
     protected static $arrSymlinks;
     
     //Core-Module + backupdb herausnehmen
-    protected $arrExclude = ['contao/calendar-bundle',
-                             'contao/comments-bundle',
-                             'contao/faq-bundle',
-                             'contao/listing-bundle',
-                             'contao/manager-bundle',
-                             'contao/news-bundle',
-                             'contao/newsletter-bundle',
-                             'do-while/contao-backupdb-bundle'
-                            ];
+    protected static $arrExclude = ['contao/calendar-bundle',
+                                    'contao/comments-bundle',
+                                    'contao/faq-bundle',
+                                    'contao/listing-bundle',
+                                    'contao/manager-bundle',
+                                    'contao/news-bundle',
+                                    'contao/newsletter-bundle',
+                                    'do-while/contao-backupdb-bundle'
+                                   ];
 
     //---------------------------------------
     // Extension-Versions-Info
@@ -76,7 +76,7 @@ class BackupDbCommon extends \Backend
            )
         {
             // $bundles: array('name' => 'version')
-            $bundles = $objComposerPackages->getPackages($this->arrExclude);
+            $bundles = $objComposerPackages->getPackages(self::$arrExclude);
         }
         ksort( $bundles );                                                   // sortieren nach name (key)
 

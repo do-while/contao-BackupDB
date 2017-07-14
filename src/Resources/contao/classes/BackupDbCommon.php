@@ -58,7 +58,7 @@ class BackupDbCommon extends \Backend
                 . "# Visit https://github.com/do-while/contao-BackupDB for more information\r\n"
                 . "#\r\n"
 
-                //--- Installierte Pakeet auflisten ---
+                //--- Installierte Pakete auflisten ---
                 . "#-----------------------------------------------------\r\n"
                 . "# If you save the backup in ZIP file, a file restoreSymlinks.php\r\n"
                 . "# is also in the ZIP. See the file for more information\r\n"
@@ -67,7 +67,7 @@ class BackupDbCommon extends \Backend
                 . "# The following packages must be installed:\r\n"
                 . "#\r\n";
 
-        //--- installierte Erweiterungen ---
+        //--- installierte Pakete ---
         $rootDir = \System::getContainer()->getParameter('kernel.project_dir');  // TL_ROOT
         $objComposerPackages = new ComposerPackages($rootDir);
         

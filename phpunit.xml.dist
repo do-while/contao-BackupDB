@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit colors="true"
+         backupGlobals="false"
+         processIsolation="false"
+>
+
+    <testsuites>
+        <testsuite name="BackupDBTest">
+            <directory>./tests</directory>
+            <exclude>./tests/demofiles</exclude>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory>./src/Resources/classes</directory>
+        </whitelist>
+	</filter>
+</phpunit>

@@ -13,6 +13,8 @@
  */
 namespace Softleister\BackupDB;
 
+use Softleister\BackupDB\ComposerPackages;
+
 
 //-------------------------------------------------------------------
 //  Backup Contao-Datenbank
@@ -21,6 +23,17 @@ class BackupDbCommon extends \Backend
 {
     // Variable für Symlink-Array
     protected static $arrSymlinks;
+    
+    //Core-Module + backupdb herausnehmen
+    protected static $arrExclude = ['contao/calendar-bundle',
+                                    'contao/comments-bundle',
+                                    'contao/faq-bundle',
+                                    'contao/listing-bundle',
+                                    'contao/manager-bundle',
+                                    'contao/news-bundle',
+                                    'contao/newsletter-bundle',
+                                    'do-while/contao-backupdb-bundle'
+                                   ];
 
     //---------------------------------------
     // Extension-Versions-Info
@@ -29,16 +42,8 @@ class BackupDbCommon extends \Backend
     {
         $objDB = \Database::getInstance();
 
-        $arrExtcludeExt44 = array (         // Module aus der Standard-Installation >= 4.4
-                                'FrameworkBundle', 'SecurityBundle', 'TwigBundle', 'MonologBundle', 'SwiftmailerBundle',
-                                'DoctrineBundle', 'DoctrineCacheBundle', 'SensioFrameworkExtraBundle', 'LexikMaintenanceBundle',
-                                'NelmioCorsBundle', 'NelmioSecurityBundle', 'ContaoManagerBundle', 'KnpMenuBundle', 'KnpTimeBundle',
-                                'HeaderReplayBundle', 'ContaoCoreBundle', 'ContaoCalendarBundle', 'ContaoCommentsBundle',
-                                'ContaoFaqBundle', 'ContaoListingBundle', 'ContaoInstallationBundle', 'ContaoNewsBundle',
-                                'ContaoNewsletterBundle', 'SoftleisterBackupDbBundle'
-                            );
-
         $instExt = array();
+        $bundles = array();
 
         $result = "#================================================================================\r\n"
                 . "# Contao-Website   : " . $GLOBALS['TL_CONFIG']['websiteTitle'] . "\r\n"
@@ -53,27 +58,34 @@ class BackupDbCommon extends \Backend
                 . "# Visit https://github.com/do-while/contao-BackupDB for more information\r\n"
                 . "#\r\n"
 
-                //--- Installierte Module unter /system/modules auflisten ---
+                //--- Installierte Pakete auflisten ---
                 . "#-----------------------------------------------------\r\n"
                 . "# If you save the backup in ZIP file, a file restoreSymlinks.php\r\n"
                 . "# is also in the ZIP. See the file for more information\r\n"
                 . "#-----------------------------------------------------\r\n"
                 . "# Contao Version " . VERSION . "." . BUILD . "\r\n"
-                . "# The following modules must be installed:\r\n"
-                . "# For the versions of modules refer to composer.lock\r\n"
+                . "# The following packages must be installed:\r\n"
                 . "#\r\n";
 
-        //--- installierte Erweiterungen ---
-        $arrBundles = array_keys( \System::getContainer()->getParameter('kernel.bundles') );    // Installierte Module lesen
-        $arrBundles = array_diff( $arrBundles, $arrExtcludeExt44 );                             // Core-Module herausnehmen
-        asort( $arrBundles );                                                                   // sortieren
-        $bundles = array_values( $arrBundles );                                                 // Index neu binden
+        //--- installierte Pakete ---
+        $rootDir = \System::getContainer()->getParameter('kernel.project_dir');  // TL_ROOT
+        $objComposerPackages = new ComposerPackages($rootDir);
+        
+        if (true === $objComposerPackages->parseComposerJson() &&
+            true === $objComposerPackages->parseComposerLock()
+           )
+        {
+            // $bundles: array('name' => 'version')
+            $bundles = $objComposerPackages->getPackages(self::$arrExclude);
+        }
+        ksort( $bundles );                                                   // sortieren nach name (key)
 
         if( empty( $bundles ) ) {
           $result .= "#   == none ==\r\n";
         }
         else {
-          foreach( $bundles as $ext ) $result .= "#   - $ext\r\n";
+          foreach( $bundles as $ext => $ver ) 
+              $result .= "#   - $ext : $ver\r\n";
         }
 
         $result .= "#\r\n"

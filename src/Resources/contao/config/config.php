@@ -8,7 +8,7 @@
  * @see	       https://github.com/do-while/contao-BackupDB
  */
 
-define('BACKUPDB_VERSION', '1.0');
+define('BACKUPDB_VERSION', '1.1');
 define('BACKUPDB_BUILD'  , '0');
 
 define('BACKUPDB_RUN_LAST',  'RunBackupDB.last');

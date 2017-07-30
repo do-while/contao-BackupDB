@@ -1,7 +1,7 @@
 <?= $this->linkpath ?><br>
 <div class="db_section db_backup first">
     <div class="db_button">
-        <a href="<?= $this->backuplink ?>" class="startbutton"><img src="bundles/softleisterbackupdb/iconBackup.png" width="64" height="64" alt="<?= $this->texte['download'] ?>" title="<?= $this->texte['startdownload'] ?>"></a>
+        <a href="<?= $this->backuplink ?>" class="startbutton"><img src="bundles/softleisterbackupdb/iconBackup.svg" width="64" height="64" alt="<?= $this->texte['download'] ?>" title="<?= $this->texte['startdownload'] ?>"></a>
     </div>
     <div class="db_description">
         <h2><?= $this->texte['download'] ?></h2>
@@ -9,7 +9,7 @@
         <p><?= $this->texte['backupdesc'] ?><br><?= $this->texte['backupsetup'] ?></p>
         <p><?= $this->texte['backuplast'] ?><strong><?= $this->lastrun ?></strong></p>
         <?php if( $this->ws_cron || (substr($this->lastcron, 0, 1) !== '-') ): ?>
-        <p class="db_cron"><?php if( $this->ws_cron ): ?><a href="<?= $this->cronlink ?>"><?php endif; ?><img src="bundles/softleisterbackupdb/iconCron.png" width="32" height="32" alt=""><?php if( $this->ws_cron ): ?></a><?php endif; ?> <?= $this->texte['croninfo'] ?><?php if( $this->ws_cron ): ?> <?= $this->texte['cronsetup'] ?><?php endif; ?><br>
+        <p class="db_cron"><?php if( $this->ws_cron ): ?><a href="<?= $this->cronlink ?>"><?php endif; ?><img src="bundles/softleisterbackupdb/iconCron.svg" width="32" height="32" alt=""><?php if( $this->ws_cron ): ?></a><?php endif; ?> <?= $this->texte['croninfo'] ?><?php if( $this->ws_cron ): ?> <?= $this->texte['cronsetup'] ?><?php endif; ?><br>
             <?= $this->texte['cronlast'] ?><strong><?= $this->lastcron ?></strong></p>
         <?php endif; ?>
     </div>
@@ -17,7 +17,7 @@
 
 <div class="db_section db_template last">
     <div class="db_button">
-        <a href="<?= $this->webtemplatelink ?>" class="startbutton"><img src="bundles/softleisterbackupdb/iconTemplate.png" width="64" height="64" alt="<?= $this->texte['maketpl'] ?>" title="<?= $this->texte['maketpl'] ?>"></a>
+        <a href="<?= $this->webtemplatelink ?>" class="startbutton"><img src="bundles/softleisterbackupdb/iconTemplate.svg" width="64" height="64" alt="<?= $this->texte['maketpl'] ?>" title="<?= $this->texte['maketpl'] ?>"></a>
     </div>
     <div class="db_description">
         <h2><?= $this->texte['maketpl'] ?></h2>

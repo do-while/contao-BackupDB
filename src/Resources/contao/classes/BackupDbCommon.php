@@ -339,38 +339,60 @@ class BackupDbCommon extends \Backend
         Self::$arrSymlinks = array();               // leeres Array
         $url = TL_ROOT . '/';
 
-        Self::iterateDir( $url );          // Symlinks suchen
+        Self::iterateDir( $url );                   // Symlinks suchen
         asort( Self::$arrSymlinks );                // alphabetisch sortieren
 
         $links = array();
         foreach( Self::$arrSymlinks as $link ) {
-            $links[] = array( 'link'=>substr( $link, strlen( $url ) ), 'target'=>readlink( $link ) );
+            $links[] = Self::getLinkData( $link );
         }
 
         $script = "<?php\n\n"
                 . "// This file is part of a backup, included in the zip archive.\n"
                 . "// Place the restoreSymlinks.php in the web directory of your\n"
-                . "// contao 4 and call http://domain.tld/restoreSymlinks.php\n\n"
+                . "// contao 4 and call http://domain.tld/restoreSymlinks.php\n"
+                . "// After running script clear symfony-cache, e.g. with Contao Manager\n\n"
                 . '$arrSymlinks = unserialize(\'' . serialize( $links ) . "');\n\n"
                 . "// Check current position\n"
                 . 'if( !is_dir( "../web" ) || !file_exists( "./app.php" ) ) {' . "\n"
                 . "\t" . 'die( "The file is not in the correct directory" );' . "\n"
                 . "}\n\n"
+                . "// detect OS\n"
+                . '$windows = strtoupper(substr(PHP_OS, 0, 3)) === "WIN";      // Windows or not' . "\n\n"
+                . "// get absolute path to contao\n"
                 . '$rootpath = getcwd();' . "\n"
                 . '$rootpath = substr( $rootpath, 0 , strlen($rootpath) - 3 );' . "\n\n"
                 . "// Restore the symlinks\n"
                 . '$errors = 0;' . "\n"
+                . '$counter = 0;' . "\n"
                 . 'foreach( $arrSymlinks as $link ) {' . "\n"
-                . "\t" . 'if( file_exists( $rootpath . $link["link"] ) && !is_link( $rootpath . $link["link"] ) ) {' . "\n"
-                . "\t\t" . 'rename( $rootpath . $link["link"], $rootpath . $link["link"] . ".removed" );' . "\n"
-                . "\t" . '}' . "\n"
-                . "\t" . 'if( is_link( $rootpath . $link["link"] ) ) continue;' . "\n\n"
-                . "\t" . 'if( !symlink( $link["target"], $rootpath . $link["link"] ) ) {' . "\n"
-                . "\t\t" . 'echo "Symlink failed: " . $rootpath . $link["link"] . "<br>";' . "\n"
+                . "\t// get linkpath\n"
+                . "\t" . '$l = $rootpath . $link["link"];                         // absolute address of symlink' . "\n"
+                . "\t" . 'if( $windows ) $l = str_replace( "/", "\\\\", $l );       // for windows change slashes' . "\n\n"
+                . "\t// get targetpath\n"
+                . "\t" . 'if( $windows ) {' ."\n"
+                . "\t\t" . '$t = str_replace( "/", "\\\\", $rootpath . $link["target"] );' . "\n"
+                . "\t}\n"
+                . "\telse {\n"
+                . "\t\t" . '$t = $link["target"];' . "\n"
+                . "\t\t" . 'for( $i = 0; $i < $link["depth"]; $i++ ) {' . "\n"
+                . "\t\t\t" . '$t = "../" . $t;' . "\n"
+                . "\t\t}\n"
+                . "\t}\n\n"
+                . "\t// check if link seem to be a directory\n"
+                . "\t" . 'if( file_exists( $l ) && !is_link( $l ) ) {' . "\n"
+                . "\t\t" . 'rename( $l, $l . ".removed" );                      // rename directory or file' . "\n"
+                . "\t}\n\n"
+                . "\t// no action, if link is a symlink\n"
+                . "\t" . 'if( is_link( $l ) ) continue;' . "\n\n"
+                . "\t// set new symlink\n"
+                . "\t" . '$counter++;' . "\n"
+                . "\t" . 'if( !symlink( $t, $l ) ) {' . "\n"
+                . "\t\t" . 'echo "Symlink failed: " . $l . "<br>";' . "\n"
                 . "\t\t" . '$errors++;' . "\n"
-                . "\t" . '}' . "\n"
-                . '}' . "\n\n"
-                . 'echo "Program terminated with " . $errors . " errors<br><br>PLEASE DELETE THE SCRIPT FROM THE DIRECTORY NOW!<br>CLEAR THE SYMFONY-CACHE, e.g. with Contao Manager<br>";' . "\n\n";
+                . "\t}\n"
+                . "}\n\n"
+                . 'echo "Program terminated with " . $errors . " errors, " . $counter . " new symlinks<br><br>PLEASE DELETE THE SCRIPT FROM THE DIRECTORY NOW!<br>CLEAR THE SYMFONY-CACHE, e.g. with Contao Manager<br>";' . "\n\n";
 
         return $script;
     }
@@ -395,5 +417,29 @@ class BackupDbCommon extends \Backend
         return;
     }
 
+    //------------------------------------------------
+    //  iterateDir: rekusives Suchen nach Symlinks
+    //------------------------------------------------
+    public static function getLinkData( $link )
+    {
+        $root = str_replace('\\', '/', TL_ROOT) . '/';
+        $sym = substr( str_replace('\\', '/', $link), strlen($root) );
+        $target = str_replace('\\', '/', readlink( $link ) );
+        
+        if( substr($target, 0, strlen($root)) === $root ) {         // absolute path
+            $target = substr($target, strlen($root));
+            $depth = count(explode('/', $sym)) - 1;
+        }
+        else {                                                      // relative path
+            $depth = 0;
+            while( substr($target, 0, 3) === '../' ) {
+                $target = substr($target, 3);
+                $depth++;
+            }
+        }
+
+        return array( 'link'=>$sym, 'target'=>trim($target, '/'), 'depth'=>$depth );        
+    }
+                                 
     //---------------------------------------
 }

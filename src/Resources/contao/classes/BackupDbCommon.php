@@ -13,6 +13,8 @@
  */
 namespace Softleister\BackupDB;
 
+use Softleister\BackupDB\ComposerPackages;
+
 
 //-------------------------------------------------------------------
 //  Backup Contao-Datenbank
@@ -21,6 +23,17 @@ class BackupDbCommon extends \Backend
 {
     // Variable für Symlink-Array
     protected static $arrSymlinks;
+    
+    //Core-Module + backupdb herausnehmen
+    protected static $arrExclude = ['contao/calendar-bundle',
+                                    'contao/comments-bundle',
+                                    'contao/faq-bundle',
+                                    'contao/listing-bundle',
+                                    'contao/manager-bundle',
+                                    'contao/news-bundle',
+                                    'contao/newsletter-bundle',
+                                    'do-while/contao-backupdb-bundle'
+                                   ];
 
     //---------------------------------------
     // Extension-Versions-Info
@@ -29,16 +42,8 @@ class BackupDbCommon extends \Backend
     {
         $objDB = \Database::getInstance();
 
-        $arrExtcludeExt44 = array (         // Module aus der Standard-Installation >= 4.4
-                                'FrameworkBundle', 'SecurityBundle', 'TwigBundle', 'MonologBundle', 'SwiftmailerBundle',
-                                'DoctrineBundle', 'DoctrineCacheBundle', 'SensioFrameworkExtraBundle', 'LexikMaintenanceBundle',
-                                'NelmioCorsBundle', 'NelmioSecurityBundle', 'ContaoManagerBundle', 'KnpMenuBundle', 'KnpTimeBundle',
-                                'HeaderReplayBundle', 'ContaoCoreBundle', 'ContaoCalendarBundle', 'ContaoCommentsBundle',
-                                'ContaoFaqBundle', 'ContaoListingBundle', 'ContaoInstallationBundle', 'ContaoNewsBundle',
-                                'ContaoNewsletterBundle', 'SoftleisterBackupDbBundle'
-                            );
-
         $instExt = array();
+        $bundles = array();
 
         $result = "#================================================================================\r\n"
                 . "# Contao-Website   : " . $GLOBALS['TL_CONFIG']['websiteTitle'] . "\r\n"
@@ -53,27 +58,34 @@ class BackupDbCommon extends \Backend
                 . "# Visit https://github.com/do-while/contao-BackupDB for more information\r\n"
                 . "#\r\n"
 
-                //--- Installierte Module unter /system/modules auflisten ---
+                //--- Installierte Pakete auflisten ---
                 . "#-----------------------------------------------------\r\n"
                 . "# If you save the backup in ZIP file, a file restoreSymlinks.php\r\n"
                 . "# is also in the ZIP. See the file for more information\r\n"
                 . "#-----------------------------------------------------\r\n"
                 . "# Contao Version " . VERSION . "." . BUILD . "\r\n"
-                . "# The following modules must be installed:\r\n"
-                . "# For the versions of modules refer to composer.lock\r\n"
+                . "# The following packages must be installed:\r\n"
                 . "#\r\n";
 
-        //--- installierte Erweiterungen ---
-        $arrBundles = array_keys( \System::getContainer()->getParameter('kernel.bundles') );    // Installierte Module lesen
-        $arrBundles = array_diff( $arrBundles, $arrExtcludeExt44 );                             // Core-Module herausnehmen
-        asort( $arrBundles );                                                                   // sortieren
-        $bundles = array_values( $arrBundles );                                                 // Index neu binden
+        //--- installierte Pakete ---
+        $rootDir = \System::getContainer()->getParameter('kernel.project_dir');  // TL_ROOT
+        $objComposerPackages = new ComposerPackages($rootDir);
+        
+        if (true === $objComposerPackages->parseComposerJson() &&
+            true === $objComposerPackages->parseComposerLock()
+           )
+        {
+            // $bundles: array('name' => 'version')
+            $bundles = $objComposerPackages->getPackages(self::$arrExclude);
+        }
+        ksort( $bundles );                                                   // sortieren nach name (key)
 
         if( empty( $bundles ) ) {
           $result .= "#   == none ==\r\n";
         }
         else {
-          foreach( $bundles as $ext ) $result .= "#   - $ext\r\n";
+          foreach( $bundles as $ext => $ver ) 
+              $result .= "#   - $ext : $ver\r\n";
         }
 
         $result .= "#\r\n"
@@ -327,38 +339,60 @@ class BackupDbCommon extends \Backend
         Self::$arrSymlinks = array();               // leeres Array
         $url = TL_ROOT . '/';
 
-        Self::iterateDir( $url );          // Symlinks suchen
+        Self::iterateDir( $url );                   // Symlinks suchen
         asort( Self::$arrSymlinks );                // alphabetisch sortieren
 
         $links = array();
         foreach( Self::$arrSymlinks as $link ) {
-            $links[] = array( 'link'=>substr( $link, strlen( $url ) ), 'target'=>readlink( $link ) );
+            $links[] = Self::getLinkData( $link );
         }
 
         $script = "<?php\n\n"
                 . "// This file is part of a backup, included in the zip archive.\n"
                 . "// Place the restoreSymlinks.php in the web directory of your\n"
-                . "// contao 4 and call http://domain.tld/restoreSymlinks.php\n\n"
+                . "// contao 4 and call http://domain.tld/restoreSymlinks.php\n"
+                . "// After running script clear symfony-cache, e.g. with Contao Manager\n\n"
                 . '$arrSymlinks = unserialize(\'' . serialize( $links ) . "');\n\n"
                 . "// Check current position\n"
                 . 'if( !is_dir( "../web" ) || !file_exists( "./app.php" ) ) {' . "\n"
                 . "\t" . 'die( "The file is not in the correct directory" );' . "\n"
                 . "}\n\n"
+                . "// detect OS\n"
+                . '$windows = strtoupper(substr(PHP_OS, 0, 3)) === "WIN";      // Windows or not' . "\n\n"
+                . "// get absolute path to contao\n"
                 . '$rootpath = getcwd();' . "\n"
                 . '$rootpath = substr( $rootpath, 0 , strlen($rootpath) - 3 );' . "\n\n"
                 . "// Restore the symlinks\n"
                 . '$errors = 0;' . "\n"
+                . '$counter = 0;' . "\n"
                 . 'foreach( $arrSymlinks as $link ) {' . "\n"
-                . "\t" . 'if( file_exists( $rootpath . $link["link"] ) && !is_link( $rootpath . $link["link"] ) ) {' . "\n"
-                . "\t\t" . 'rename( $rootpath . $link["link"], $rootpath . $link["link"] . ".removed" );' . "\n"
-                . "\t" . '}' . "\n"
-                . "\t" . 'if( is_link( $rootpath . $link["link"] ) ) continue;' . "\n\n"
-                . "\t" . 'if( !symlink( $link["target"], $rootpath . $link["link"] ) ) {' . "\n"
-                . "\t\t" . 'echo "Symlink failed: " . $rootpath . $link["link"] . "<br>";' . "\n"
+                . "\t// get linkpath\n"
+                . "\t" . '$l = $rootpath . $link["link"];                         // absolute address of symlink' . "\n"
+                . "\t" . 'if( $windows ) $l = str_replace( "/", "\\\\", $l );       // for windows change slashes' . "\n\n"
+                . "\t// get targetpath\n"
+                . "\t" . 'if( $windows ) {' ."\n"
+                . "\t\t" . '$t = str_replace( "/", "\\\\", $rootpath . $link["target"] );' . "\n"
+                . "\t}\n"
+                . "\telse {\n"
+                . "\t\t" . '$t = $link["target"];' . "\n"
+                . "\t\t" . 'for( $i = 0; $i < $link["depth"]; $i++ ) {' . "\n"
+                . "\t\t\t" . '$t = "../" . $t;' . "\n"
+                . "\t\t}\n"
+                . "\t}\n\n"
+                . "\t// check if link seem to be a directory\n"
+                . "\t" . 'if( file_exists( $l ) && !is_link( $l ) ) {' . "\n"
+                . "\t\t" . 'rename( $l, $l . ".removed" );                      // rename directory or file' . "\n"
+                . "\t}\n\n"
+                . "\t// no action, if link is a symlink\n"
+                . "\t" . 'if( is_link( $l ) ) continue;' . "\n\n"
+                . "\t// set new symlink\n"
+                . "\t" . '$counter++;' . "\n"
+                . "\t" . 'if( !symlink( $t, $l ) ) {' . "\n"
+                . "\t\t" . 'echo "Symlink failed: " . $l . "<br>";' . "\n"
                 . "\t\t" . '$errors++;' . "\n"
-                . "\t" . '}' . "\n"
-                . '}' . "\n\n"
-                . 'echo "Program terminated with " . $errors . " errors<br><br>PLEASE DELETE THE SCRIPT FROM THE DIRECTORY NOW!<br>CLEAR THE SYMFONY-CACHE, e.g. with Contao Manager<br>";' . "\n\n";
+                . "\t}\n"
+                . "}\n\n"
+                . 'echo "Program terminated with " . $errors . " errors, " . $counter . " new symlinks<br><br>PLEASE DELETE THE SCRIPT FROM THE DIRECTORY NOW!<br>CLEAR THE SYMFONY-CACHE, e.g. with Contao Manager<br>";' . "\n\n";
 
         return $script;
     }
@@ -383,5 +417,29 @@ class BackupDbCommon extends \Backend
         return;
     }
 
+    //------------------------------------------------
+    //  iterateDir: rekusives Suchen nach Symlinks
+    //------------------------------------------------
+    public static function getLinkData( $link )
+    {
+        $root = str_replace('\\', '/', TL_ROOT) . '/';
+        $sym = substr( str_replace('\\', '/', $link), strlen($root) );
+        $target = str_replace('\\', '/', readlink( $link ) );
+        
+        if( substr($target, 0, strlen($root)) === $root ) {         // absolute path
+            $target = substr($target, strlen($root));
+            $depth = count(explode('/', $sym)) - 1;
+        }
+        else {                                                      // relative path
+            $depth = 0;
+            while( substr($target, 0, 3) === '../' ) {
+                $target = substr($target, 3);
+                $depth++;
+            }
+        }
+
+        return array( 'link'=>$sym, 'target'=>trim($target, '/'), 'depth'=>$depth );        
+    }
+                                 
     //---------------------------------------
 }

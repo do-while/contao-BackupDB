@@ -61,8 +61,15 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['backupdb_zip'] = array
 			'eval'                    => array('tl_class'=>'w50 m12')
 		);
 
+$GLOBALS['TL_DCA']['tl_settings']['fields']['backupdb_var'] = array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_settings']['backupdb_var'],
+			'inputType'               => 'text',
+			'eval'                    => array('rgxp'=>'alias', 'maxlength'=>128, 'tl_class'=>'w50 clr')
+		);
+
 
 /**
  * Modify palette
  */
-$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= ';{backupdb_legend:hide},backupdb_blacklist,backupdb_saveddb,WsTemplatePath,backupdb_zip,AutoBackupCount,backupdb_sendmail,backupdb_attmail';
+$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= ';{backupdb_legend:hide},backupdb_blacklist,backupdb_saveddb,WsTemplatePath,backupdb_zip,backupdb_var,AutoBackupCount,backupdb_sendmail,backupdb_attmail';

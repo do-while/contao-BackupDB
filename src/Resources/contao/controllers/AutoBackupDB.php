@@ -43,6 +43,13 @@ class AutoBackupDb extends \Frontend
     //-------------------------
     public function run( )
     {
+        // Spamming-Schutz
+        if( \Config::get('backupdb_var') != '' ) {
+            if( \Input::get( \Config::get('backupdb_var') ) === NULL ) {
+                die( 'You cannot access this file directly!' );             // Variable nicht vorhanden => NULL
+            }                                                               // Variable leer            => ''
+        }
+
         @set_time_limit( 600 );
 
         //--- alten Zeitstempel löschen ---

@@ -19,6 +19,7 @@ $GLOBALS['TL_LANG']['tl_settings']['backupdb_blacklist'] = array('Blacklist for 
 $GLOBALS['TL_LANG']['tl_settings']['backupdb_sendmail']  = array('E-mail notification after AutoBackup', 'Sends a mail after a successful backup to the administrator.');
 $GLOBALS['TL_LANG']['tl_settings']['backupdb_attmail']   = array('Append AutoBackup file', 'Append the backup file to the notification e-mail.');
 $GLOBALS['TL_LANG']['tl_settings']['backupdb_zip']       = array('Compress backup with restore informations', 'The ZIP file also contains the <em>composer.json</em>, <em>composer.lock</em> and a PHP script for the restore of symlinks.');
+$GLOBALS['TL_LANG']['tl_settings']['backupdb_var']       = array('Individual call parameter', 'To protect the AutoBackup call from spamming, a variable can be specified here. If the variable is not included in the call, no backup takes place. Call with variable transfer: www.domain.tld/BackupDB/autobackup?variable');
 
 /**
  * Legends

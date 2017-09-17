@@ -17,6 +17,8 @@ English Manual see<br>
 
 
 **Version:**<br>
+* 1.2.0 stable - 2017-09-17<br>
+Individueller Aufrufparameter als Spam-Schutz
 * 1.1.0 stable - 2017-08-05<br>
 Verbesserte Liste der installierten Erweiterungen mit Version<br>
 Script restoreSymlinks.php jetzt Windows/Linux kompatibel
@@ -30,6 +32,6 @@ https://github.com/do-while/contao-BackupDB/issues
 
 
 ___
-Softleister - 2017-08-05
+Softleister - 2017-09-17
 
 Dank an **[BugBuster](https://github.com/BugBuster1701)** für die Unterstützung bei der Überführung der Erweiterung von Contao 3 auf Contao 4

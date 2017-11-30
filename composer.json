@@ -12,7 +12,7 @@
     }],
     "support": {
         "issues": "https://github.com/do-while/contao-BackupDB/issues",
-        "wiki": "http://de.contaowiki.org/BackupDB",
+        "wiki": "https://github.com/do-while/contao-BackupDB/wiki",
         "source": "https://github.com/do-while/contao-BackupDB"
     },
     "require": {

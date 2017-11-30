@@ -9,7 +9,7 @@
  */
 
 define('BACKUPDB_VERSION', '1.2');
-define('BACKUPDB_BUILD'  , '0');
+define('BACKUPDB_BUILD'  , '1');
 
 define('BACKUPDB_RUN_LAST',  'RunBackupDB.last');
 define('BACKUPDB_CRON_LAST', 'AutoBackupDB.last');

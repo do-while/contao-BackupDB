@@ -12,8 +12,8 @@ namespace Softleister\BackupDbBundle\Controller;
 
 use Softleister\BackupDB\AutoBackupDB;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Handles the AutoBackup frontend routes.

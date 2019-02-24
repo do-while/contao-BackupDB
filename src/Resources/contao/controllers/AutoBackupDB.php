@@ -132,7 +132,7 @@ class AutoBackupDb extends \Frontend
         if( isset( $GLOBALS['TL_CONFIG']['backupdb_sendmail'] ) && ($GLOBALS['TL_CONFIG']['backupdb_sendmail'] == true) ) {
             $objEmail = new \Email();
             $objEmail->from = $GLOBALS['TL_CONFIG']['adminEmail'];
-            $objEmail->subject = 'AutoBackupDB ' . \Environment::get('host') . ' (' . $GLOBALS['TL_CONFIG']['websiteTitle'] . ')';
+            $objEmail->subject = 'AutoBackupDB ' . \Environment::get('host');
             $objEmail->text = BackupDbCommon::getHeaderInfo( false, $from );
 
             if( isset( $GLOBALS['TL_CONFIG']['backupdb_attmail'] ) && ($GLOBALS['TL_CONFIG']['backupdb_attmail'] == true) ) {

@@ -53,7 +53,11 @@ class ModuleBackupDB extends \BackendModule
         if( isset( $GLOBALS['TL_CONFIG']['WsTemplatePath'] ) && is_dir(TL_ROOT.'/'.trim($GLOBALS['TL_CONFIG']['WsTemplatePath'], '/')) && (trim($GLOBALS['TL_CONFIG']['WsTemplatePath']) != '') ) {
             $zielVerz = trim($GLOBALS['TL_CONFIG']['WsTemplatePath'], '/');
         }
-        $filename = \StringUtil::generateAlias( $GLOBALS['TL_CONFIG']['websiteTitle'] );
+
+        $filename = \Environment::get('host');                                                                  // Dateiname = Domainname
+        if( isset($GLOBALS['TL_CONFIG']['websiteTitle']) ) $filename = $GLOBALS['TL_CONFIG']['websiteTitle'];   // IF( Exiat WbsiteTitle ) Dateiname für Template-Dateien
+        $filename = \StringUtil::generateAlias( $filename );                                                    // Dateiname = Alias für Template-Dateien
+
         $this->Template->ws_template_sqlfile = $zielVerz.'/' . $filename . '.sql';
         $this->Template->ws_template_txtfile = $zielVerz.'/' . $filename . '.txt';
         $this->Template->ws_template_strfile = $zielVerz.'/' . $filename . '.structure';

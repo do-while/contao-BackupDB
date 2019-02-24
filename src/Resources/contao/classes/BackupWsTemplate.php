@@ -37,7 +37,10 @@ class BackupWsTemplate extends \Backend
         \System::loadLanguageFile('tl_backupdb');                                           // Modultexte laden
 
         $user     = \BackendUser::getInstance();                                            // Backend-User
-        $filename = \StringUtil::generateAlias( $GLOBALS['TL_CONFIG']['websiteTitle'] );    // Dateiname für Template-Dateien
+
+        $filename = \Environment::get('host');                                                                  // Dateiname = Domainname
+        if( isset($GLOBALS['TL_CONFIG']['websiteTitle']) ) $filename = $GLOBALS['TL_CONFIG']['websiteTitle'];   // IF( Exiat WbsiteTitle ) Dateiname für Template-Dateien
+        $filename = \StringUtil::generateAlias( $filename );                                                    // Dateiname = Alias für Template-Dateien
 
         $arrExclude = Array (                       // Diese Datenbank-Tabellen gehören nicht in ein WS-Template
                                 'tl_cache',

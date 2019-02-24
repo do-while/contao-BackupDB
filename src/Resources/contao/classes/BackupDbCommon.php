@@ -46,7 +46,7 @@ class BackupDbCommon extends \Backend
         $bundles = array();
 
         $result = "#================================================================================\r\n"
-                . "# Contao-Website   : " . $GLOBALS['TL_CONFIG']['websiteTitle'] . "\r\n"
+                . "# Contao-Website   : " . (isset($GLOBALS['TL_CONFIG']['websiteTitle']) ? $GLOBALS['TL_CONFIG']['websiteTitle'] : \Environment::get('host')) . "\r\n"
                 . "# Contao-Database  : " . $GLOBALS['TL_CONFIG']['dbDatabase'] . "\r\n"
                 . "# " . $savedby . "\r\n"
                 . "# Time stamp       : " . date( "Y-m-d" ) . " at " . date( "H:i:s" ) . "\r\n"

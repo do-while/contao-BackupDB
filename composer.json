@@ -36,9 +36,6 @@
         }
     },
     "extra": {
-        "branch-alias": {
-            "dev-develop": "1.4.x-dev"
-        },
 		"contao-manager-plugin": "Softleister\\BackupDbBundle\\ContaoManager\\Plugin"
     }
 }

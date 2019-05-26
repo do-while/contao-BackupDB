@@ -195,6 +195,10 @@ class BackupDbCommon extends \Backend
         while( $zeile = $objStatus->fetchAssoc() ) {
             $result[$zeile['Name']]['TABLE_OPTIONS'] = ' ENGINE=' . $zeile['Engine'] . ' DEFAULT CHARSET=' . substr($zeile['Collation'], 0, strpos($zeile['Collation'],"_"));
 
+            if( ($zeile['Engine'] === 'InnoDB') && ($zeile['Row_format'] === 'Dynamic') ) {
+                $result[$zeile['Name']]['TABLE_OPTIONS'] .= ' COLLATE=' . $zeile['Collation'] . ' ROW_FORMAT=DYNAMIC';
+            }
+
             if( $zeile['Auto_increment'] != '' ) {
                 $result[$zeile['Name']]['TABLE_OPTIONS'] .= ' AUTO_INCREMENT=' . $zeile['Auto_increment'];
             }

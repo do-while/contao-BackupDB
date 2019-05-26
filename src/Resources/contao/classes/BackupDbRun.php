@@ -39,7 +39,7 @@ class BackupDbRun extends \Backend
         $filepath = $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB';
         $pfad = TL_ROOT . '/' . $filepath;
         if( file_exists( $pfad . '/' . BACKUPDB_RUN_LAST ) ) {
-            unlink( $pfad . '/' . BACKUPDB_RUN_LAST );          // LastRun-Datei löschen
+            unlink( $pfad . '/' . BACKUPDB_RUN_LAST );                  // LastRun-Datei löschen
         }
 
         //--- Datei-Extension festlegen ---
@@ -74,20 +74,20 @@ class BackupDbRun extends \Backend
         
         //--- Wenn Komprimierung gewünscht, ZIP erstellen ---
         if( $ext === '.zip' ) {
-            $objZip = new \ZipWriter( $filepath . '/' . $tmpdatei->basename . '.zip' );
+            $objZip = new \ZipWriter( $filepath . '/' . $tmpdatei->name . $ext );
             $objZip->addFile( $filepath . '/' . $tmpdatei->name, $tmpdatei->name );
             $objZip->addFile( 'composer.json' );
             $objZip->addFile( 'composer.lock' );
+            $objZip->addFile( 'system/config/localconfig.php', 'localconfig.php' );
             $objZip->addString( BackupDbCommon::get_symlinks(), 'restoreSymlinks.php', time() );    // Symlink-Recovery
             $objZip->close();
         }
-
         // Timestamp-Datei erstellen
         $datei = new \File( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/' . BACKUPDB_RUN_LAST );
         $datei->write( date($GLOBALS['TL_CONFIG']['datimFormat']) );
         $datei->close();
 
-		// Update the hash of the target folder
+        // Update the hash of the target folder
         $objFile = \Dbafs::addResource( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/' . BACKUPDB_RUN_LAST );    // Datei in der Dateiverwaltung eintragen
         \Dbafs::updateFolderHashes($strUploadFolder);
 
@@ -96,14 +96,15 @@ class BackupDbRun extends \Backend
         header( 'Expires: 0' );
         header( 'Cache-Control: must-revalidate, post-check=0, pre-check=0' );
         header( 'Cache-Control: private', false );
-        header( 'Content-type: application/octet-stream' );
+        header( 'Content-type: application/' . ($ext === '' ? 'octet-stream' : 'zip') );
         header( 'Content-disposition: attachment; filename=' . $tmpdatei->name . $ext );
         header( 'Content-Transfer-Encoding: binary' );
 
-        echo file_get_contents( $pfad . '/' . $tmpdatei->name . $ext ); // Ausgabe als Download
-        $tmpdatei->delete( );
+        echo file_get_contents( TL_ROOT . '/' . $tmpdatei->path . $ext );       // Ausgabe als Download
+
         if( $ext === '.zip' ) {
-            unlink( $pfad . '/' . $tmpdatei->name . $ext );             // ZIP-Datei löschen
+            unlink( TL_ROOT . '/' . $tmpdatei->path . $ext );                   // ZIP-Datei löschen
         }
+        $tmpdatei->delete( );
     }
 }

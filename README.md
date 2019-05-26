@@ -17,6 +17,7 @@ English Manual see<br>
 
 
 **Version:**<br>
+* 1.4.0 stable - 2019-05-26<br>1) Additions for Contao 4.7<br>2) localconfig.php added ti the restore infos (ZIP)
 * 1.3.2 stable - 2019-02-24<br>
 Anpassungen für Contao 4.7
 * 1.3.0 stable - 2018-09-05<br>

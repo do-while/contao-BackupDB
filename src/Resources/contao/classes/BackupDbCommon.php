@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright  Softleister 2007-2017
+ * @copyright  Softleister 2007-2020
  * @author     Softleister <info@softleister.de>
  * @package    BackupDB - Database backup
  * @license    LGPL
@@ -51,7 +51,7 @@ class BackupDbCommon extends \Backend
                 . "# " . $savedby . "\r\n"
                 . "# Time stamp       : " . date( "Y-m-d" ) . " at " . date( "H:i:s" ) . "\r\n"
                 . "#\r\n"
-                . "# Contao Extension : BackupDbBundle, Version " . BACKUPDB_VERSION . '.' . BACKUPDB_BUILD . "\r\n"
+                . "# Contao Extension : BackupDbBundle, Version " . \System::getContainer()->getParameter('kernel.packages')['do-while/contao-backupdb-bundle'] . "\r\n"
                 . "# Copyright        : Softleister (www.softleister.de)\r\n"
                 . "# Licence          : LGPL\r\n"
                 . "#\r\n"

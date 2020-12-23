@@ -8,10 +8,15 @@
         <p><?= $this->texte['database'] ?><?= $this->database ?></p>
         <p><?= $this->texte['backupdesc'] ?><br><?= $this->texte['backupsetup'] ?></p>
         <p><?= $this->texte['backuplast'] ?><strong><?= $this->lastrun ?></strong></p>
-        <?php if( $this->ws_cron || (substr($this->lastcron, 0, 1) !== '-') ): ?>
-        <p class="db_cron"><?php if( $this->ws_cron ): ?><a href="<?= $this->cronlink ?>"><?php endif; ?><img src="bundles/softleisterbackupdb/iconCron.svg" width="32" height="32" alt=""><?php if( $this->ws_cron ): ?></a><?php endif; ?> <?= $this->texte['croninfo'] ?><?php if( $this->ws_cron ): ?> <?= $this->texte['cronsetup'] ?><?php endif; ?><br>
-            <?= $this->texte['cronlast'] ?><strong><?= $this->lastcron ?></strong></p>
-        <?php endif; ?>
+        <p class="db_cron">
+            <?php if( $this->ws_cron ): ?><a href="<?= $this->cronlink ?>"><?php endif; ?><img src="bundles/softleisterbackupdb/iconCron.svg" width="32" height="32" alt=""><?php if( $this->ws_cron ): ?></a><?php endif; ?>
+            <?= $this->texte['autoinfo'] ?><br>
+            <?php if( $this->ws_cron || (substr($this->lastcron, 0, 1) !== '-') ): ?>
+            <?= $this->texte['croninfo'] ?>
+            <?php if( $this->ws_cron ): ?> <?= $this->texte['cronsetup'] ?><?php endif; ?><br>
+            <?= $this->texte['cronlast'] ?><strong><?= $this->lastcron ?></strong>
+            <?php endif; ?>
+        </p>
     </div>
 </div>
 

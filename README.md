@@ -17,7 +17,7 @@ English Manual see<br>
 
 
 **Version:**<br>
-* 1.4.0 stable - 2019-05-26<br>1) Additions for Contao 4.7<br>2) localconfig.php added ti the restore infos (ZIP)
+* 1.4.0 stable - 2019-05-26<br>1) Additions for Contao 4.7<br>2) localconfig.php added to the restore infos (ZIP)
 * 1.3.2 stable - 2019-02-24<br>
 Anpassungen für Contao 4.7
 * 1.3.0 stable - 2018-09-05<br>
@@ -37,6 +37,6 @@ https://github.com/do-while/contao-BackupDB/issues
 
 
 ___
-Softleister - 2019-02-24
+Softleister - 2020-12-23
 
 Dank an **[BugBuster](https://github.com/BugBuster1701)** für die Unterstützung bei der Überführung der Erweiterung von Contao 3 auf Contao 4

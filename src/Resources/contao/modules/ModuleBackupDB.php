@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright  Softleister 2007-2017
+ * @copyright  Softleister 2007-2020
  * @author     Softleister <info@softleister.de>
  * @package    BackupDB - Database backup
  * @license    LGPL
@@ -41,7 +41,7 @@ class ModuleBackupDB extends \BackendModule
                                     $this->Template = $objTemplate;
                                     $this->Template->arrResults = BackupWsTemplate::run( );
                                     $this->Template->back = 'contao/main.php?do=BackupDB&ref' . TL_REFERER_ID;
-                                    $this->Template->backupdb_version = 'BackupDB Version ' . BACKUPDB_VERSION . '.' . BACKUPDB_BUILD;
+                                    $this->Template->backupdb_version = 'BackupDB Version ' . \System::getContainer()->getParameter('kernel.packages')['do-while/contao-backupdb-bundle'];
                                     return;
         }
 
@@ -78,6 +78,7 @@ class ModuleBackupDB extends \BackendModule
                                         'backupsetup'   => sprintf( $GLOBALS['TL_LANG']['tl_backupdb']['backupsetup'], $settingslink ),
                                         'backuplast'    => $GLOBALS['TL_LANG']['tl_backupdb']['backuplast'] . ': ',
 
+                                        'autoinfo'      => $GLOBALS['TL_LANG']['tl_backupdb']['autoinfo'] . ': <strong>' . \Environment::get('url') . '/BackupDB/autobackup' . (\Config::get('backupdb_var') != '' ? '?' . \Config::get('backupdb_var') : '') . '</strong>',
                                         'croninfo'      => $GLOBALS['TL_LANG']['tl_backupdb']['croninfo'],
                                         'cronsetup'     => sprintf( $GLOBALS['TL_LANG']['tl_backupdb']['cronsetup'], $cronlink ),
                                         'cronlast'      => $GLOBALS['TL_LANG']['tl_backupdb']['cronlast'] . ': ',
@@ -106,7 +107,7 @@ class ModuleBackupDB extends \BackendModule
 
         //--- Footer ---
         $this->Template->backupdb_icons = 'Icons from <a href="https://icons8.com" target="_blank">Icons8</a> (<a href="https://creativecommons.org/licenses/by-nd/3.0/" target="_blank">CC BY-ND 3.0</a>)';
-        $this->Template->backupdb_version = '<a href="https://github.com/do-while/contao-BackupDB" target="_blank">BackupDB Version ' . BACKUPDB_VERSION . '.' . BACKUPDB_BUILD . '</a>';
+        $this->Template->backupdb_version = '<a href="https://github.com/do-while/contao-BackupDB" target="_blank">BackupDB Version ' . \System::getContainer()->getParameter('kernel.packages')['do-while/contao-backupdb-bundle'] . '</a>';
     }
 
 

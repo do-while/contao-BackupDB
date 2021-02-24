@@ -16,9 +16,9 @@
         "source": "https://github.com/do-while/contao-BackupDB"
     },
     "require": {
-        "php": ">=5.6.0",
+        "php": ">=7.2.0",
         "contao/core-bundle": ">=4.4.0,<5.0",
-        "symfony/routing": "^3.0 || ^4.0"
+        "symfony/routing": "^3.0 || ^4.0 || ^5.0"
     },
     "autoload": {
         "classmap": [

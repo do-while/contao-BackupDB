@@ -23,7 +23,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @Route("/BackupDB", defaults={"_scope" = "frontend", "_token_check" = false})
  */
-class BackupDbController extends Controller
+class BackupDbController extends \Controller
 {
     /**
      * Renders the alerts content.

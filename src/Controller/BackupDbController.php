@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright  Softleister 2007-2017
+ * @copyright  Softleister 2007-2021
  * @author     Softleister <info@softleister.de>
  * @package    BackupDB - Database backup
  * @license    LGPL
@@ -11,19 +11,19 @@
 namespace Softleister\BackupDbBundle\Controller;
 
 use Softleister\BackupDB\AutoBackupDB;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Handles the AutoBackup frontend routes.
  *
- * @copyright  Softleister 2007-2017
+ * @copyright  Softleister 2007-2021
  * @author     Softleister <info@softleister.de>
  *
  * @Route("/BackupDB", defaults={"_scope" = "frontend", "_token_check" = false})
  */
-class BackupDbController extends Controller
+class BackupDbController extends AbstractController
 {
     /**
      * Renders the alerts content.

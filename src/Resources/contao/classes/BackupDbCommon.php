@@ -405,20 +405,21 @@ class BackupDbCommon extends \Backend
     //------------------------------------------------
     //  iterateDir: rekusives Suchen nach Symlinks
     //------------------------------------------------
-    public static function iterateDir( $startPath )
+    public static function iterateDir($startPath)
     {
-        foreach( new \DirectoryIterator( $startPath ) as $objItem ) {
-            if( $objItem->isLink( ) ) {
-                Self::$arrSymlinks[] = $objItem->getPath( ) . '/' . $objItem->getFilename( );
+        foreach(new \DirectoryIterator($startPath) as $objItem) {
+            if($objItem->isDot()) {
                 continue;
             }
-            if($objItem->isDir( ) ) {
-                if( !$objItem->isDot( ) ) Self::iterateDir( $objItem->getPathname(), $arrResult );
+            if($objItem->isLink()) {
+                self::$arrSymlinks[] = $objItem->getPath() . '/' . $objItem->getFilename();
                 continue;
             }
-            if( $objItem->isLink() ) Self::$arrSymlinks[] = $objItem->getPath( ) . '/' . $objItem->getFilename( );
+            if($objItem->isDir()) {
+                self::iterateDir($objItem->getPathname());
+                continue;
+            }
         }
-        return;
     }
 
     //------------------------------------------------

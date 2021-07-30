@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright  Softleister 2007-2020
+ * @copyright  Softleister 2007-2021
  * @author     Softleister <info@softleister.de>
  * @package    BackupDB - Database backup
  * @license    LGPL
@@ -24,17 +24,17 @@ class BackupDbRun extends \Backend
     //-------------------------
     public function __construct( )
     {
-        parent::__construct();                      // Construktor Backend ausführen
-        \BackendUser::authenticate();               // Authentifizierung überprüfen
+        parent::__construct();                      	// Construktor Backend ausführen
+        \Contao\BackendUser::authenticate();            // Authentifizierung überprüfen
     }
 
     //-------------------------
     //  Backup ausführen
     //-------------------------
-    public function run( )
+    public static function run( )
     {
         @set_time_limit( 600 );
-        $user = \BackendUser::getInstance();
+        $user = \Contao\BackendUser::getInstance();
 
         $filepath = $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB';
         $pfad = TL_ROOT . '/' . $filepath;
@@ -48,7 +48,7 @@ class BackupDbRun extends \Backend
             $ext = '.zip';
         }
 
-        $tmpdatei = new \File( $filepath . '/Database_' . $GLOBALS['TL_CONFIG']['dbDatabase'] . '_' . date('Y-m-d') . '_' . date('His') . '.sql' );        // temporäre Datei erstellen
+        $tmpdatei = new \Contao\File( $filepath . '/Database_' . $GLOBALS['TL_CONFIG']['dbDatabase'] . '_' . date('Y-m-d') . '_' . date('His') . '.sql' );        // temporäre Datei erstellen
         $tmpdatei->write( BackupDbCommon::getHeaderInfo( true, 'Saved by User    : ' . $user->username . ' (' . $user->name . ')' ) );
 
         $arrBlacklist = BackupDbCommon::get_blacklist( );
@@ -83,13 +83,13 @@ class BackupDbRun extends \Backend
             $objZip->close();
         }
         // Timestamp-Datei erstellen
-        $datei = new \File( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/' . BACKUPDB_RUN_LAST );
+        $datei = new \Contao\File( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/' . BACKUPDB_RUN_LAST );
         $datei->write( date($GLOBALS['TL_CONFIG']['datimFormat']) );
         $datei->close();
 
         // Update the hash of the target folder
-        $objFile = \Dbafs::addResource( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/' . BACKUPDB_RUN_LAST );    // Datei in der Dateiverwaltung eintragen
-        \Dbafs::updateFolderHashes($strUploadFolder);
+        $objFile = \Contao\Dbafs::addResource( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/' . BACKUPDB_RUN_LAST );    // Datei in der Dateiverwaltung eintragen
+        \Contao\Dbafs::updateFolderHashes( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/' );
 
         //=== Ausgabe der temporären Datei ===
         header( 'Pragma: public' );

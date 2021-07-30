@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright  Softleister 2007-2020
+ * @copyright  Softleister 2007-2021
  * @author     Softleister <info@softleister.de>
  * @package    BackupDB - Database backup
  * @license    LGPL
@@ -17,7 +17,7 @@ namespace Softleister\BackupDB;
 /**
  * Class ModuleBackupDB
  */
-class ModuleBackupDB extends \BackendModule
+class ModuleBackupDB extends \Contao\BackendModule
 {
     /**
      * Template
@@ -31,17 +31,17 @@ class ModuleBackupDB extends \BackendModule
      */
     protected function compile()
     {
-        \System::loadLanguageFile('tl_backupdb');
+        \Contao\System::loadLanguageFile('tl_backupdb');
 
-        switch( \Input::get('act') ) {
+        switch( \Contao\Input::get('act') ) {
             case 'backup':          BackupDbRun::run( );
                                     die( );               // Beenden, da Download rausgegangen ist
 
-            case 'webtemplate':     $objTemplate = new \BackendTemplate('be_backupdb_wstpl');
+            case 'webtemplate':     $objTemplate = new \Contao\BackendTemplate('be_backupdb_wstpl');
                                     $this->Template = $objTemplate;
                                     $this->Template->arrResults = BackupWsTemplate::run( );
                                     $this->Template->back = 'contao/main.php?do=BackupDB&ref' . TL_REFERER_ID;
-                                    $this->Template->backupdb_version = 'BackupDB Version ' . \System::getContainer()->getParameter('kernel.packages')['do-while/contao-backupdb-bundle'];
+                                    $this->Template->backupdb_version = 'BackupDB Version ' . \Contao\System::getContainer()->getParameter('kernel.packages')['do-while/contao-backupdb-bundle'];
                                     return;
         }
 
@@ -50,13 +50,13 @@ class ModuleBackupDB extends \BackendModule
         if( isset( $GLOBALS['BACKUPDB']['WsTemplatePath'] ) && is_dir(TL_ROOT.'/'.trim($GLOBALS['BACKUPDB']['WsTemplatePath'], '/')) ) {
             $zielVerz = trim($GLOBALS['BACKUPDB']['WsTemplatePath'], '/');
         }
-        if( isset( $GLOBALS['TL_CONFIG']['WsTemplatePath'] ) && is_dir(TL_ROOT.'/'.trim($GLOBALS['TL_CONFIG']['WsTemplatePath'], '/')) && (trim($GLOBALS['TL_CONFIG']['WsTemplatePath']) != '') ) {
+        if( isset( $GLOBALS['TL_CONFIG']['WsTemplatePath'] ) && is_dir(TL_ROOT.'/'.trim($GLOBALS['TL_CONFIG']['WsTemplatePath'], '/')) && !empty(trim($GLOBALS['TL_CONFIG']['WsTemplatePath'])) ) {
             $zielVerz = trim($GLOBALS['TL_CONFIG']['WsTemplatePath'], '/');
         }
 
-        $filename = \Environment::get('host');                                                                  // Dateiname = Domainname
+        $filename = \Contao\Environment::get('host');                                                           // Dateiname = Domainname
         if( isset($GLOBALS['TL_CONFIG']['websiteTitle']) ) $filename = $GLOBALS['TL_CONFIG']['websiteTitle'];   // IF( Exiat WbsiteTitle ) Dateiname für Template-Dateien
-        $filename = \StringUtil::generateAlias( $filename );                                                    // Dateiname = Alias für Template-Dateien
+        $filename = \Contao\StringUtil::generateAlias( $filename );                                             // Dateiname = Alias für Template-Dateien
 
         $this->Template->ws_template_sqlfile = $zielVerz.'/' . $filename . '.sql';
         $this->Template->ws_template_txtfile = $zielVerz.'/' . $filename . '.txt';
@@ -69,6 +69,7 @@ class ModuleBackupDB extends \BackendModule
         $this->Template->webtemplatelink = 'contao/main.php?do=BackupDB&amp;act=webtemplate&amp;rt=' . REQUEST_TOKEN . '&amp;ref=' . TL_REFERER_ID;
 
         $this->Template->database = $GLOBALS['TL_CONFIG']['dbDatabase'];
+		$autoinfo = \Contao\Environment::get('url') . '/BackupDB/autobackup' . (empty(\Contao\Config::get('backupdb_var')) ? '' : '?' . \Contao\Config::get('backupdb_var'));
         $this->Template->texte    = array(
                                         'download'      => $GLOBALS['TL_LANG']['tl_backupdb']['download'],
                                         'startdownload' => $GLOBALS['TL_LANG']['tl_backupdb']['startdownload'],
@@ -78,7 +79,7 @@ class ModuleBackupDB extends \BackendModule
                                         'backupsetup'   => sprintf( $GLOBALS['TL_LANG']['tl_backupdb']['backupsetup'], $settingslink ),
                                         'backuplast'    => $GLOBALS['TL_LANG']['tl_backupdb']['backuplast'] . ': ',
 
-                                        'autoinfo'      => $GLOBALS['TL_LANG']['tl_backupdb']['autoinfo'] . ': <strong>' . \Environment::get('url') . '/BackupDB/autobackup' . (\Config::get('backupdb_var') != '' ? '?' . \Config::get('backupdb_var') : '') . '</strong>',
+                                        'autoinfo'      => $GLOBALS['TL_LANG']['tl_backupdb']['autoinfo'] . ': <strong><a href="' . $autoinfo . '" target="_blank">' . $autoinfo . '</a></strong>',
                                         'croninfo'      => $GLOBALS['TL_LANG']['tl_backupdb']['croninfo'],
                                         'cronsetup'     => sprintf( $GLOBALS['TL_LANG']['tl_backupdb']['cronsetup'], $cronlink ),
                                         'cronlast'      => $GLOBALS['TL_LANG']['tl_backupdb']['cronlast'] . ': ',
@@ -107,7 +108,7 @@ class ModuleBackupDB extends \BackendModule
 
         //--- Footer ---
         $this->Template->backupdb_icons = 'Icons from <a href="https://icons8.com" target="_blank">Icons8</a> (<a href="https://creativecommons.org/licenses/by-nd/3.0/" target="_blank">CC BY-ND 3.0</a>)';
-        $this->Template->backupdb_version = '<a href="https://github.com/do-while/contao-BackupDB" target="_blank">BackupDB Version ' . \System::getContainer()->getParameter('kernel.packages')['do-while/contao-backupdb-bundle'] . '</a>';
+        $this->Template->backupdb_version = '<a href="https://github.com/do-while/contao-BackupDB" target="_blank">BackupDB Version ' . \Contao\System::getContainer()->getParameter('kernel.packages')['do-while/contao-backupdb-bundle'] . '</a>';
     }
 
 
@@ -117,7 +118,7 @@ class ModuleBackupDB extends \BackendModule
     public function checkCronExt( )
     {
         $result = 0;                                    // kein Cron
-        $objDB = \Database::getInstance();
+        $objDB = \Contao\Database::getInstance();
 
         if( $objDB->tableExists('tl_crontab') ) {
             $result = 1;                                // Cron vorhanden, kein Job

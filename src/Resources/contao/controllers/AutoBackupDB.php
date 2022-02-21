@@ -21,23 +21,8 @@ use Contao\CoreBundle\Monolog\ContaoContext;
 // Copyright (c) 2007-2021 by Softleister
 //-------------------------------------------------------------------
 
-class AutoBackupDb extends \Frontend
+class AutoBackupDb
 {
-    //-------------------------
-    //  Constructor
-    //-------------------------
-    public function __construct( )
-    {
-        parent::__construct( );                         // Construktor Backend ausführen
-
-        if( !defined( 'BE_USER_LOGGED_IN' ) ) {
-            define( 'BE_USER_LOGGED_IN', false );
-        }
-        if( !defined( 'FE_USER_LOGGED_IN' ) ) {
-            define( 'FE_USER_LOGGED_IN', false );
-        }
-    }
-
     //-------------------------
     //  Backup ausführen
     //-------------------------

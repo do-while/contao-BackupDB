@@ -17,7 +17,7 @@ English Manual see<br>
 
 
 **Version:**<br>
-* 1.5.0 stable - 2021-07-31<br>1) Anpassungen für PHP 8<br>2) Kompatibel mit Symfony 5
+* 1.5.0 stable - 2022-02-22<br>1) Anpassungen für PHP 8<br>2) Kompatibel mit Symfony 5
 * 1.4.0 stable - 2019-05-26<br>1) Additions for Contao 4.7<br>2) localconfig.php added to the restore infos (ZIP)
 * 1.3.2 stable - 2019-02-24<br>
 Anpassungen für Contao 4.7
@@ -38,6 +38,7 @@ https://github.com/do-while/contao-BackupDB/issues
 
 
 ___
-Softleister - 2021-07-31
+Softleister - 2022-02-22
 
 Dank an **[BugBuster](https://github.com/BugBuster1701)** für die Unterstützung bei der Überführung der Erweiterung von Contao 3 auf Contao 4
+Dank an **[fritzmg](https://github.com/fritzmg)** für die Arbeit an der Kompatibilität bei Contao 4.13

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright  Softleister 2007-2017
+ * @copyright  Softleister 2007-2021
  * @author     Softleister <info@softleister.de>
  * @package    BackupDB - Database backup
  * @license    LGPL
@@ -18,34 +18,19 @@ use Contao\CoreBundle\Monolog\ContaoContext;
 //-------------------------------------------------------------------
 // AutoBackupDB.php Backup Contao-Datenbank mittels Cron-Job
 //
-// Copyright (c) 2007-2017 by Softleister
+// Copyright (c) 2007-2021 by Softleister
 //-------------------------------------------------------------------
 
-class AutoBackupDb extends \Frontend
+class AutoBackupDb
 {
-    //-------------------------
-    //  Constructor
-    //-------------------------
-    public function __construct( )
-    {
-        parent::__construct( );                         // Construktor Backend ausführen
-
-        if( !defined( 'BE_USER_LOGGED_IN' ) ) {
-            define( 'BE_USER_LOGGED_IN', false );
-        }
-        if( !defined( 'FE_USER_LOGGED_IN' ) ) {
-            define( 'FE_USER_LOGGED_IN', false );
-        }
-    }
-
     //-------------------------
     //  Backup ausführen
     //-------------------------
     public function run( )
     {
         // Spamming-Schutz
-        if( \Config::get('backupdb_var') != '' ) {
-            if( \Input::get( \Config::get('backupdb_var') ) === NULL ) {
+        if( !empty(\Contao\Config::get('backupdb_var')) ) {
+            if( \Contao\Input::get( \Contao\Config::get('backupdb_var') ) === null ) {
                 die( 'You cannot access this file directly!' );             // Variable nicht vorhanden => NULL
             }                                                               // Variable leer            => ''
         }
@@ -90,8 +75,8 @@ class AutoBackupDb extends \Frontend
         }
 
         //--- neue Datei AutoBackupDB-1.sql ---
-        $datei = new \File( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/AutoBackupDB-1.sql' );
-        $from = defined( 'DIRECT_CALL' ) ? 'Saved            : by direct call from IP ' . $this->Environment->ip : 'Saved by Cron';
+        $datei = new \Contao\File( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/AutoBackupDB-1.sql' );
+        $from = defined( 'DIRECT_CALL' ) ? 'Saved            : by direct call from IP ' . \Contao\Environment::get('ip') : 'Saved by Cron';
         $datei->write( BackupDbCommon::getHeaderInfo( true, $from ) );
 
         $arrBlacklist = BackupDbCommon::get_blacklist( );
@@ -118,10 +103,11 @@ class AutoBackupDb extends \Frontend
 
         //--- Wenn Komprimierung gewünscht, ZIP erstellen ---
         if( $ext === '.zip' ) {
-            $objZip = new \ZipWriter( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/AutoBackupDB-1.zip' );
+            $objZip = new \Contao\ZipWriter( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/AutoBackupDB-1.zip' );
             $objZip->addFile( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/AutoBackupDB-1.sql', 'AutoBackupDB-1.sql' );
             $objZip->addFile( 'composer.json' );
             $objZip->addFile( 'composer.lock' );
+            $objZip->addFile( 'system/config/localconfig.php', 'localconfig.php' );
             $objZip->addString( BackupDbCommon::get_symlinks(), 'restoreSymlinks.php', time() );    // Symlink-Recovery
             $objZip->close();
             unlink( $pfad . '/AutoBackupDB-1.sql' );
@@ -130,9 +116,9 @@ class AutoBackupDb extends \Frontend
 
         //--- Mail-Benachrichtigung ---
         if( isset( $GLOBALS['TL_CONFIG']['backupdb_sendmail'] ) && ($GLOBALS['TL_CONFIG']['backupdb_sendmail'] == true) ) {
-            $objEmail = new \Email();
+            $objEmail = new \Contao\Email();
             $objEmail->from = $GLOBALS['TL_CONFIG']['adminEmail'];
-            $objEmail->subject = 'AutoBackupDB ' . \Environment::get('host');
+            $objEmail->subject = 'AutoBackupDB ' . \Contao\Environment::get('host');
             $objEmail->text = BackupDbCommon::getHeaderInfo( false, $from );
 
             if( isset( $GLOBALS['TL_CONFIG']['backupdb_attmail'] ) && ($GLOBALS['TL_CONFIG']['backupdb_attmail'] == true) ) {
@@ -142,13 +128,13 @@ class AutoBackupDb extends \Frontend
             $objEmail->sendTo( $GLOBALS['TL_CONFIG']['adminEmail'] );
         }
 
-        $datei = new \File( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/' . BACKUPDB_CRON_LAST );
+        $datei = new \Contao\File( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/' . BACKUPDB_CRON_LAST );
         $datei->write( date($GLOBALS['TL_CONFIG']['datimFormat']) );
         $datei->close();
 
         // Update the hash of the target folder
-        $objFile = \Dbafs::addResource( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/' . BACKUPDB_CRON_LAST );    // Datei in der Dateiverwaltung eintragen
-        \Dbafs::updateFolderHashes( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/' );
+        $objFile = \Contao\Dbafs::addResource( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/' . BACKUPDB_CRON_LAST );    // Datei in der Dateiverwaltung eintragen
+        \Contao\Dbafs::updateFolderHashes( $GLOBALS['TL_CONFIG']['uploadPath'] . '/AutoBackupDB/' );
 
         return new Response( $result );
     }

@@ -1,0 +1,5 @@
+services:
+    Softleister\BackupDbBundle\Controller\BackupDbController:
+        arguments:
+            - '@contao.framework'
+        tags: ['controller.service_arguments']

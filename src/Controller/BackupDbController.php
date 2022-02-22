@@ -10,8 +10,7 @@
 
 namespace Softleister\BackupDbBundle\Controller;
 
-use Softleister\BackupDB\AutoBackupDB;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -21,10 +20,20 @@ use Symfony\Component\Routing\Annotation\Route;
  * @copyright  Softleister 2007-2021
  * @author     Softleister <info@softleister.de>
  *
- * @Route("/BackupDB", defaults={"_scope" = "frontend", "_token_check" = false})
+ * @Route("/BackupDB")
  */
-class BackupDbController extends AbstractController
+class BackupDbController
 {
+    /**
+     * @var ContaoFramework
+     */
+    private $framework;
+
+    public function __construct(ContaoFramework $framework)
+    {
+        $this->framework = $framework;
+    }
+
     /**
      * Renders the alerts content.
      *
@@ -32,9 +41,9 @@ class BackupDbController extends AbstractController
      *
      * @Route("/autobackup", name="backupdb_autobackup")
      */
-    public function AutoBackupAction()
+    public function autoBackupAction()
     {
-        $this->container->get('contao.framework')->initialize();
+        $this->framework->initialize();
 
         $controller = new \Softleister\BackupDB\AutoBackupDb();
 

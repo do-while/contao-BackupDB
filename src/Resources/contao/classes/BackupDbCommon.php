@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright  Softleister 2007-2020
+ * @copyright  Softleister 2007-2021
  * @author     Softleister <info@softleister.de>
  * @package    BackupDB - Database backup
  * @license    LGPL
@@ -40,18 +40,18 @@ class BackupDbCommon extends \Backend
     //---------------------------------------
     public static function getHeaderInfo( $sql_mode, $savedby = 'Saved by Cron' )
     {
-        $objDB = \Database::getInstance();
+        $objDB = \Contao\Database::getInstance();
 
         $instExt = array();
         $bundles = array();
 
         $result = "#================================================================================\r\n"
-                . "# Contao-Website   : " . (isset($GLOBALS['TL_CONFIG']['websiteTitle']) ? $GLOBALS['TL_CONFIG']['websiteTitle'] : \Environment::get('host')) . "\r\n"
+                . "# Contao-Website   : " . (isset($GLOBALS['TL_CONFIG']['websiteTitle']) ? $GLOBALS['TL_CONFIG']['websiteTitle'] : \Contao\Environment::get('host')) . "\r\n"
                 . "# Contao-Database  : " . $GLOBALS['TL_CONFIG']['dbDatabase'] . "\r\n"
                 . "# " . $savedby . "\r\n"
                 . "# Time stamp       : " . date( "Y-m-d" ) . " at " . date( "H:i:s" ) . "\r\n"
                 . "#\r\n"
-                . "# Contao Extension : BackupDbBundle, Version " . \System::getContainer()->getParameter('kernel.packages')['do-while/contao-backupdb-bundle'] . "\r\n"
+                . "# Contao Extension : BackupDbBundle, Version " . \Contao\System::getContainer()->getParameter('kernel.packages')['do-while/contao-backupdb-bundle'] . "\r\n"
                 . "# Copyright        : Softleister (www.softleister.de)\r\n"
                 . "# Licence          : LGPL\r\n"
                 . "#\r\n"
@@ -68,7 +68,7 @@ class BackupDbCommon extends \Backend
                 . "#\r\n";
 
         //--- installierte Pakete ---
-        $rootDir = \System::getContainer()->getParameter('kernel.project_dir');  // TL_ROOT
+        $rootDir = \Contao\System::getContainer()->getParameter('kernel.project_dir');  // TL_ROOT
         $objComposerPackages = new ComposerPackages($rootDir);
         
         if (true === $objComposerPackages->parseComposerJson() &&
@@ -111,7 +111,7 @@ class BackupDbCommon extends \Backend
     public static function getFromDB( )
     {
         $result = array();
-        $objDB = \Database::getInstance( );
+        $objDB = \Contao\Database::getInstance( );
 
         $tables = $objDB->listTables( null, true );
         if( empty($tables) ) {
@@ -136,14 +136,14 @@ class BackupDbCommon extends \Backend
 
                     // Field type
                     if( isset($field['length']) && ($field['length'] != '') ) {
-                        $field['type'] .= '(' . $field['length'] . ((isset($field['precision']) && $field['precision'] != '') ? ',' . $field['precision'] : '') . ')';
+                        $field['type'] .= '(' . $field['length'] . ((isset($field['precision']) && !empty($field['precision'])) ? ',' . $field['precision'] : '') . ')';
 
                         unset( $field['length'] );
                         unset( $field['precision'] );
                     }
 
                     // Variant collation
-                    if( ($field['collation'] != '') && ($field['collation'] != $GLOBALS['TL_CONFIG']['dbCollation']) ) {
+                    if( !empty($field['collation']) && ($field['collation'] !== $GLOBALS['TL_CONFIG']['dbCollation']) ) {
                         $field['collation'] = 'COLLATE ' . $field['collation'];
                     }
                     else {
@@ -173,7 +173,7 @@ class BackupDbCommon extends \Backend
                     $index_fields = str_replace(array('(', ')`'), array('`(', ')'), $index_fields );
 
                     switch( $field['index'] ) {
-                        case 'UNIQUE':  if( $name == 'PRIMARY' ) {
+                        case 'UNIQUE':  if( $name === 'PRIMARY' ) {
                                             $result[$table]['TABLE_CREATE_DEFINITIONS'][$name] = 'PRIMARY KEY  ('.$index_fields.')';
                                         }
                                         else {
@@ -199,7 +199,7 @@ class BackupDbCommon extends \Backend
                 $result[$zeile['Name']]['TABLE_OPTIONS'] .= ' COLLATE=' . $zeile['Collation'] . ' ROW_FORMAT=DYNAMIC';
             }
 
-            if( $zeile['Auto_increment'] != '' ) {
+            if( !empty($zeile['Auto_increment']) ) {
                 $result[$zeile['Name']]['TABLE_OPTIONS'] .= ' AUTO_INCREMENT=' . $zeile['Auto_increment'];
             }
         }
@@ -234,7 +234,7 @@ class BackupDbCommon extends \Backend
     //------------------------------------------------
     public static function get_table_content( $table, $datei=NULL, $sitetemplate=false )
     {
-        $objDB = \Database::getInstance();
+        $objDB = \Contao\Database::getInstance();
 
         $objData = $objDB->executeUncached( "SELECT * FROM $table" );
 
@@ -244,7 +244,7 @@ class BackupDbCommon extends \Backend
         if( $sitetemplate ) {
             $fieldlist = ' (';
             foreach( $fields as $field ) {
-                if( $field['type'] != 'index' ) {
+                if( $field['type'] !== 'index' ) {
                     $fieldlist .= '`' . $field['name'] . '`, ';
                 }
             }
@@ -254,7 +254,7 @@ class BackupDbCommon extends \Backend
         }
 
         $noentries = $objData->numRows ? '' : ' - no entries';
-        if( $datei == NULL ) {
+        if( $datei === null ) {
             echo "\r\n"
                . "#\r\n"
                . "# Dumping data for table '$table'" . $noentries . "\r\n"
@@ -274,7 +274,7 @@ class BackupDbCommon extends \Backend
                 if( !isset( $field_data ) ) {
                     $insert_data .= " NULL,";
                 }
-                else if( $field_data != "" ) {
+                else if( !empty($field_data) ) {
                     switch( strtolower($fields[$i]['type']) ) {
                         case 'blob':
                         case 'binary':
@@ -291,7 +291,7 @@ class BackupDbCommon extends \Backend
                                             break;
 
                         case 'text':
-                        case 'mediumtext':  if( strpos( $field_data, "'" ) != false ) {  // ist im Text ein Hochkomma vorhanden, wird der Text in HEX-Darstellung gesichert
+                        case 'mediumtext':  if( strpos( $field_data, "'" ) !== false ) {  // ist im Text ein Hochkomma vorhanden, wird der Text in HEX-Darstellung gesichert
                                                 $insert_data .= " 0x" . bin2hex($field_data) . ",";
                                                 break;
                                             }
@@ -308,7 +308,7 @@ class BackupDbCommon extends \Backend
             }
             $insert_data = trim( $insert_data, ',' );
             $insert_data .= " )";
-            if( $datei == NULL ) {
+            if( $datei === null ) {
                 echo "$insert_data;\r\n";           // Zeile ausgeben
             }
             else {
@@ -327,7 +327,7 @@ class BackupDbCommon extends \Backend
     {
         $arrBlacklist = array();                // Default: alle Datentabellen werden gesichert
 
-        if( isset( $GLOBALS['TL_CONFIG']['backupdb_blacklist'] ) && (trim($GLOBALS['TL_CONFIG']['backupdb_blacklist']) != '') ) {
+        if( isset( $GLOBALS['TL_CONFIG']['backupdb_blacklist'] ) && !empty(trim($GLOBALS['TL_CONFIG']['backupdb_blacklist'])) ) {
             $arrBlacklist = trimsplit(',', strtolower($GLOBALS['TL_CONFIG']['backupdb_blacklist']));
         }
 
@@ -405,18 +405,18 @@ class BackupDbCommon extends \Backend
     //------------------------------------------------
     //  iterateDir: rekusives Suchen nach Symlinks
     //------------------------------------------------
-    public static function iterateDir($startPath)
+    public static function iterateDir( $startPath )
     {
-        foreach(new \DirectoryIterator($startPath) as $objItem) {
-            if($objItem->isDot()) {
+        foreach( new \DirectoryIterator( $startPath ) as $objItem ) {
+            if( $objItem->isDot( ) ) {
                 continue;
             }
-            if($objItem->isLink()) {
-                self::$arrSymlinks[] = $objItem->getPath() . '/' . $objItem->getFilename();
+            if( $objItem->isLink( ) ) {
+                self::$arrSymlinks[] = $objItem->getPath( ) . '/' . $objItem->getFilename( );
                 continue;
             }
-            if($objItem->isDir()) {
-                self::iterateDir($objItem->getPathname());
+            if( $objItem->isDir( ) ) {
+                self::iterateDir( $objItem->getPathname( ) );
                 continue;
             }
         }

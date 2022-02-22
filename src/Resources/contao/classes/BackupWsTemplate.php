@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright  Softleister 2007-2017
+ * @copyright  Softleister 2007-2021
  * @author     Softleister <info@softleister.de>
  * @package    BackupDB - Database backup
  * @license    LGPL
@@ -25,7 +25,7 @@ class BackupWsTemplate extends \Backend
     public function __construct( )
     {
         parent::__construct();                      // Construktor Backend ausführen
-        \BackendUser::authenticate();               // Authentifizierung überprüfen
+        \Contao\BackendUser::authenticate();        // Authentifizierung überprüfen
     }
 
     //-------------------------
@@ -34,13 +34,13 @@ class BackupWsTemplate extends \Backend
     public function run( )
     {
         @set_time_limit( 600 );
-        \System::loadLanguageFile('tl_backupdb');                                           // Modultexte laden
+        \Contao\System::loadLanguageFile('tl_backupdb');                                    // Modultexte laden
 
-        $user     = \BackendUser::getInstance();                                            // Backend-User
+        $user     = \Contao\BackendUser::getInstance();                                     // Backend-User
 
-        $filename = \Environment::get('host');                                                                  // Dateiname = Domainname
+        $filename = \Contao\Environment::get('host');                                                           // Dateiname = Domainname
         if( isset($GLOBALS['TL_CONFIG']['websiteTitle']) ) $filename = $GLOBALS['TL_CONFIG']['websiteTitle'];   // IF( Exiat WbsiteTitle ) Dateiname für Template-Dateien
-        $filename = \StringUtil::generateAlias( $filename );                                                    // Dateiname = Alias für Template-Dateien
+        $filename = \Contao\StringUtil::generateAlias( $filename );                                             // Dateiname = Alias für Template-Dateien
 
         $arrExclude = Array (                       // Diese Datenbank-Tabellen gehören nicht in ein WS-Template
                                 'tl_cache',
@@ -66,7 +66,7 @@ class BackupWsTemplate extends \Backend
         if( isset( $GLOBALS['BACKUPDB']['WsTemplatePath'] ) && is_dir(TL_ROOT . '/' . trim($GLOBALS['BACKUPDB']['WsTemplatePath'], '/')) ) {
             $zielVerz = trim($GLOBALS['BACKUPDB']['WsTemplatePath'], '/');
         }
-        if( isset( $GLOBALS['TL_CONFIG']['WsTemplatePath'] ) && is_dir(TL_ROOT . '/' . trim($GLOBALS['TL_CONFIG']['WsTemplatePath'], '/')) && (trim($GLOBALS['TL_CONFIG']['WsTemplatePath']) != '') ) {
+        if( isset( $GLOBALS['TL_CONFIG']['WsTemplatePath'] ) && is_dir(TL_ROOT . '/' . trim($GLOBALS['TL_CONFIG']['WsTemplatePath'], '/')) && !empty(trim($GLOBALS['TL_CONFIG']['WsTemplatePath'])) ) {
             $zielVerz = trim($GLOBALS['TL_CONFIG']['WsTemplatePath'], '/');
         }
 
@@ -75,7 +75,7 @@ class BackupWsTemplate extends \Backend
         $fileTXT = $filename . '.txt';              // Info-Datei
         $fileSTR = $filename . '.structure';        // Struktur-Datei
 
-        $datei = new \File( $tempdir . $fileSQL );
+        $datei = new \Contao\File( $tempdir . $fileSQL );
         $datei->write( $headertext );
         $datei->write( 'SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";' . "\r\n"
                      . "\r\n"
@@ -85,7 +85,7 @@ class BackupWsTemplate extends \Backend
                      . "/*!40101 SET NAMES utf8 */;\r\n" );
 
         $arrSavedDB = array( 'tl_' );               // Default, Verhalten wie in den Vorversionen von BackupDB
-        if( isset( $GLOBALS['TL_CONFIG']['backupdb_saveddb'] ) && (trim($GLOBALS['TL_CONFIG']['backupdb_saveddb']) != '') ) {
+        if( isset( $GLOBALS['TL_CONFIG']['backupdb_saveddb'] ) && !empty(trim($GLOBALS['TL_CONFIG']['backupdb_saveddb'])) ) {
             $arrSavedDB = trimsplit( ',', strtolower($GLOBALS['TL_CONFIG']['backupdb_saveddb']) );
         }
 
@@ -117,7 +117,7 @@ class BackupWsTemplate extends \Backend
         $datei->write( "\r\n# --- End of Backup ---\r\n" );                 // Endekennung
         $datei->close();
 
-        $datei = new \File( $tempdir . $fileSTR );                          // Strukturdatei öffnen
+        $datei = new \Contao\File( $tempdir . $fileSTR );                   // Strukturdatei öffnen
         $datei->write( BackupDbCommon::getHeaderInfo( true, 'Saved by User    : ' . $user->username . ' (' . $user->name . ')' ));
 
         $sqlarray = BackupDbCommon::getFromDB( );
@@ -135,7 +135,7 @@ class BackupWsTemplate extends \Backend
                       ."\r\n# --- End of Backup ---\r\n" );                            // Endekennung
         $datei->close();
 
-        $datei = new \File( $tempdir . $fileTXT );                          // Textdatei öffnen
+        $datei = new \Contao\File( $tempdir . $fileTXT );                   // Textdatei öffnen
         $datei->write( $headertext );
         $datei->close();
 

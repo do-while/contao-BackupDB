@@ -40,5 +40,5 @@ https://github.com/do-while/contao-BackupDB/issues
 ___
 Softleister - 2022-02-22
 
-Dank an **[BugBuster](https://github.com/BugBuster1701)** für die Unterstützung bei der Überführung der Erweiterung von Contao 3 auf Contao 4
+Dank an **[BugBuster](https://github.com/BugBuster1701)** für die Unterstützung bei der Überführung der Erweiterung von Contao 3 auf Contao 4<br>
 Dank an **[fritzmg](https://github.com/fritzmg)** für die Arbeit an der Kompatibilität bei Contao 4.13

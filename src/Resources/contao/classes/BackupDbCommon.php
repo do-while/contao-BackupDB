@@ -407,19 +407,19 @@ class BackupDbCommon extends \Backend
     //------------------------------------------------
     public static function iterateDir( $startPath )
     {
-		$arrResult = [];
         foreach( new \DirectoryIterator( $startPath ) as $objItem ) {
+            if( $objItem->isDot( ) ) {
+                continue;
+            }
             if( $objItem->isLink( ) ) {
-                Self::$arrSymlinks[] = $objItem->getPath( ) . '/' . $objItem->getFilename( );
+                self::$arrSymlinks[] = $objItem->getPath( ) . '/' . $objItem->getFilename( );
                 continue;
             }
             if( $objItem->isDir( ) ) {
-                if( !$objItem->isDot( ) ) Self::iterateDir( $objItem->getPathname(), $arrResult );
+                self::iterateDir( $objItem->getPathname( ) );
                 continue;
             }
-            if( $objItem->isLink() ) Self::$arrSymlinks[] = $objItem->getPath( ) . '/' . $objItem->getFilename( );
         }
-        return;
     }
 
     //------------------------------------------------

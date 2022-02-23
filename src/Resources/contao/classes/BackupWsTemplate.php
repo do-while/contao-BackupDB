@@ -31,7 +31,7 @@ class BackupWsTemplate extends \Backend
     //-------------------------
     //  Backup ausführen
     //-------------------------
-    public function run( )
+    public static function run( )
     {
         @set_time_limit( 600 );
         \Contao\System::loadLanguageFile('tl_backupdb');                                    // Modultexte laden

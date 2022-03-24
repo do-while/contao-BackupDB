@@ -218,7 +218,7 @@ class BackupDbCommon extends \Backend
                 . "# Table structure for table '$table'\r\n"
                 . "#---------------------------------------------------------\r\n";
 
-        $result .= "CREATE TABLE `" . $table . "` (\n  " . implode(",\n  ", $tablespec['TABLE_FIELDS']) . (count($tablespec['TABLE_CREATE_DEFINITIONS']) ? ',' : '') . "\n";
+        $result .= "CREATE TABLE `" . $table . "` (\n  " . implode(",\n  ", $tablespec['TABLE_FIELDS']) . (count($tablespec['TABLE_CREATE_DEFINITIONS'] ?? []) ? ',' : '') . "\n";
 
         if( is_array( $tablespec['TABLE_CREATE_DEFINITIONS'] ) ) {                     // Bugfix 29.3.2009 Softleister
             $result .= "  " . implode( ",\n  ", $tablespec['TABLE_CREATE_DEFINITIONS'] ) . "\n";

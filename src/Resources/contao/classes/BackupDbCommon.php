@@ -274,7 +274,7 @@ class BackupDbCommon extends \Backend
                 if( !isset( $field_data ) ) {
                     $insert_data .= " NULL,";
                 }
-                else if( !empty($field_data) ) {
+                else if( $field_data !== '' ) {
                     switch( strtolower($fields[$i]['type']) ) {
                         case 'blob':
                         case 'binary':

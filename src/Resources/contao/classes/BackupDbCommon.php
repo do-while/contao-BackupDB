@@ -92,7 +92,8 @@ class BackupDbCommon extends \Backend
                 . "#================================================================================\r\n"
                 . "\r\n";
         if( $sql_mode ) {
-            $result .= 'SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";' . "\r\n"
+            $result .= 'SET autocommit = 0;'. "\r\n"
+                    . 'SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";' . "\r\n"
                     . 'SET time_zone = "+00:00";' . "\r\n"
                     . "\r\n"
                     . "/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;\r\n"

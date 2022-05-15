@@ -96,7 +96,8 @@ class AutoBackupDb
         $datei->write( "\r\n/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;\r\n"
                      . "/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;\r\n"
                      . "/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;\r\n"
-                     . "\r\n# --- End of Backup ---\r\n" );           // Endekennung
+                     . "\r\n# --- End of Backup ---\r\n"
+                     . "SET autocommit = 1;"   );           // Endekennung
         $datei->close();
 
         $result .= 'End of Backup<br>';

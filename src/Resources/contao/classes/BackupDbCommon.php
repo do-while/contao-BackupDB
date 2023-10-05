@@ -213,6 +213,10 @@ class BackupDbCommon extends \Backend
     //---------------------------------------
     public static function get_table_structure( $table, $tablespec )
     {
+        if (!isset($tablespec['TABLE_FIELDS'])) {
+            return '';
+        }
+        
         $result = "\r\n"
                 . "#---------------------------------------------------------\r\n"
                 . "# Table structure for table '$table'\r\n"

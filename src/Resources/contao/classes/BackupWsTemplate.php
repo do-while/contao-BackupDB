@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright  Softleister 2007-2021
+ * @copyright  Softleister 2007-2024
  * @author     Softleister <info@softleister.de>
  * @package    BackupDB - Database backup
  * @license    LGPL
@@ -13,11 +13,18 @@
  */
 namespace Softleister\BackupDB;
 
+use Contao\Backend;
+use Contao\File;
+use Contao\StringUtil;
+use Contao\Environment;
+use Contao\System;
+use Contao\BackendUser;
+
 
 //-------------------------------------------------------------------
 //  Backend um die WsTemplate-Funktionen erweitern
 //-------------------------------------------------------------------
-class BackupWsTemplate extends \Backend
+class BackupWsTemplate extends Backend
 {
     //-------------------------
     //  Constructor
@@ -25,7 +32,7 @@ class BackupWsTemplate extends \Backend
     public function __construct( )
     {
         parent::__construct();                      // Construktor Backend ausführen
-        \Contao\BackendUser::authenticate();        // Authentifizierung überprüfen
+        BackendUser::authenticate();                // Authentifizierung überprüfen
     }
 
     //-------------------------
@@ -34,13 +41,13 @@ class BackupWsTemplate extends \Backend
     public static function run( )
     {
         @set_time_limit( 600 );
-        \Contao\System::loadLanguageFile('tl_backupdb');                                    // Modultexte laden
+        System::loadLanguageFile('tl_backupdb');                                    // Modultexte laden
 
-        $user     = \Contao\BackendUser::getInstance();                                     // Backend-User
+        $user     = BackendUser::getInstance();                                     // Backend-User
 
-        $filename = \Contao\Environment::get('host');                                                           // Dateiname = Domainname
+        $filename = Environment::get('host');                                                                   // Dateiname = Domainname
         if( isset($GLOBALS['TL_CONFIG']['websiteTitle']) ) $filename = $GLOBALS['TL_CONFIG']['websiteTitle'];   // IF( Exiat WbsiteTitle ) Dateiname für Template-Dateien
-        $filename = \Contao\StringUtil::generateAlias( $filename );                                             // Dateiname = Alias für Template-Dateien
+        $filename = StringUtil::generateAlias( $filename );                                                     // Dateiname = Alias für Template-Dateien
 
         $arrExclude = Array (                       // Diese Datenbank-Tabellen gehören nicht in ein WS-Template
                                 'tl_cache',
@@ -75,7 +82,7 @@ class BackupWsTemplate extends \Backend
         $fileTXT = $filename . '.txt';              // Info-Datei
         $fileSTR = $filename . '.structure';        // Struktur-Datei
 
-        $datei = new \Contao\File( $tempdir . $fileSQL );
+        $datei = new File( $tempdir . $fileSQL );
         $datei->write( $headertext );
         $datei->write( 'SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";' . "\r\n"
                      . "\r\n"
@@ -114,10 +121,10 @@ class BackupWsTemplate extends \Backend
         }
         $arrResults['entries'] = $arrEntries;
 
-        $datei->write( "\r\n# --- End of Backup ---\r\n" );                 // Endekennung
+        $datei->write( "\r\nSET autocommit = 1;\r\n\r\n# --- End of Backup ---" );      // Endekennung
         $datei->close();
 
-        $datei = new \Contao\File( $tempdir . $fileSTR );                   // Strukturdatei öffnen
+        $datei = new File( $tempdir . $fileSTR );                                   // Strukturdatei öffnen
         $datei->write( BackupDbCommon::getHeaderInfo( true, 'Saved by User    : ' . $user->username . ' (' . $user->name . ')' ));
 
         $sqlarray = BackupDbCommon::getFromDB( );
@@ -132,10 +139,11 @@ class BackupWsTemplate extends \Backend
         $datei->write( "\r\n/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;\r\n"
                       ."/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;\r\n"
                       ."/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;\r\n"
-                      ."\r\n# --- End of Backup ---\r\n" );                            // Endekennung
-        $datei->close();
+                      . "SET autocommit = 1;\r\n"                         // Endekennung
+                      . "\r\n# --- End of Backup ---\r\n" );
+      $datei->close();
 
-        $datei = new \Contao\File( $tempdir . $fileTXT );                   // Textdatei öffnen
+        $datei = new File( $tempdir . $fileTXT );                        // Textdatei öffnen
         $datei->write( $headertext );
         $datei->close();
 

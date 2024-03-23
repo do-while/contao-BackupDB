@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright  Softleister 2007-2021
+ * @copyright  Softleister 2007-2024
  * @author     Softleister <info@softleister.de>
  * @package    BackupDB - Database backup
  * @license    LGPL
@@ -14,12 +14,17 @@
 namespace Softleister\BackupDB;
 
 use Softleister\BackupDB\ComposerPackages;
+use DirectoryIterator;
+use Contao\System;
+use Contao\Environment;
+use Contao\Database;
+use Contao\Backend;
 
 
 //-------------------------------------------------------------------
 //  Backup Contao-Datenbank
 //-------------------------------------------------------------------
-class BackupDbCommon extends \Backend
+class BackupDbCommon extends Backend
 {
     // Variable für Symlink-Array
     protected static $arrSymlinks;
@@ -32,6 +37,7 @@ class BackupDbCommon extends \Backend
                                     'contao/manager-bundle',
                                     'contao/news-bundle',
                                     'contao/newsletter-bundle',
+                                    'contao/conflicts',
                                     'do-while/contao-backupdb-bundle'
                                    ];
 
@@ -40,18 +46,18 @@ class BackupDbCommon extends \Backend
     //---------------------------------------
     public static function getHeaderInfo( $sql_mode, $savedby = 'Saved by Cron' )
     {
-        $objDB = \Contao\Database::getInstance();
+        $objDB = Database::getInstance();
 
         $instExt = array();
         $bundles = array();
 
         $result = "#================================================================================\r\n"
-                . "# Contao-Website   : " . (isset($GLOBALS['TL_CONFIG']['websiteTitle']) ? $GLOBALS['TL_CONFIG']['websiteTitle'] : \Contao\Environment::get('host')) . "\r\n"
+                . "# Contao-Website   : " . (isset($GLOBALS['TL_CONFIG']['websiteTitle']) ? $GLOBALS['TL_CONFIG']['websiteTitle'] : Environment::get('host')) . "\r\n"
                 . "# Contao-Database  : " . $GLOBALS['TL_CONFIG']['dbDatabase'] . "\r\n"
                 . "# " . $savedby . "\r\n"
                 . "# Time stamp       : " . date( "Y-m-d" ) . " at " . date( "H:i:s" ) . "\r\n"
                 . "#\r\n"
-                . "# Contao Extension : BackupDbBundle, Version " . \Contao\System::getContainer()->getParameter('kernel.packages')['do-while/contao-backupdb-bundle'] . "\r\n"
+                . "# Contao Extension : BackupDbBundle, Version " . System::getContainer()->getParameter('kernel.packages')['do-while/contao-backupdb-bundle'] . "\r\n"
                 . "# Copyright        : Softleister (www.softleister.de)\r\n"
                 . "# Licence          : LGPL\r\n"
                 . "#\r\n"
@@ -68,7 +74,7 @@ class BackupDbCommon extends \Backend
                 . "#\r\n";
 
         //--- installierte Pakete ---
-        $rootDir = \Contao\System::getContainer()->getParameter('kernel.project_dir');  // TL_ROOT
+        $rootDir = System::getContainer()->getParameter('kernel.project_dir');  // TL_ROOT
         $objComposerPackages = new ComposerPackages($rootDir);
         
         if (true === $objComposerPackages->parseComposerJson() &&
@@ -92,7 +98,8 @@ class BackupDbCommon extends \Backend
                 . "#================================================================================\r\n"
                 . "\r\n";
         if( $sql_mode ) {
-            $result .= 'SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";' . "\r\n"
+            $result .= 'SET autocommit = 0;'. "\r\n"
+                    . 'SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";' . "\r\n"
                     . 'SET time_zone = "+00:00";' . "\r\n"
                     . "\r\n"
                     . "/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;\r\n"
@@ -111,7 +118,7 @@ class BackupDbCommon extends \Backend
     public static function getFromDB( )
     {
         $result = array();
-        $objDB = \Contao\Database::getInstance( );
+        $objDB = Database::getInstance( );
 
         $tables = $objDB->listTables( null, true );
         if( empty($tables) ) {
@@ -213,6 +220,10 @@ class BackupDbCommon extends \Backend
     //---------------------------------------
     public static function get_table_structure( $table, $tablespec )
     {
+        if( !isset( $tablespec['TABLE_FIELDS'] ) || !is_array( $tablespec['TABLE_FIELDS'] ) ) {
+            return '';
+        }
+
         $result = "\r\n"
                 . "#---------------------------------------------------------\r\n"
                 . "# Table structure for table '$table'\r\n"
@@ -234,7 +245,7 @@ class BackupDbCommon extends \Backend
     //------------------------------------------------
     public static function get_table_content( $table, $datei=NULL, $sitetemplate=false )
     {
-        $objDB = \Contao\Database::getInstance();
+        $objDB = Database::getInstance();
 
         $objData = $objDB->executeUncached( "SELECT * FROM $table" );
 
@@ -407,7 +418,7 @@ class BackupDbCommon extends \Backend
     //------------------------------------------------
     public static function iterateDir( $startPath )
     {
-        foreach( new \DirectoryIterator( $startPath ) as $objItem ) {
+        foreach( new DirectoryIterator( $startPath ) as $objItem ) {
             if( $objItem->isDot( ) ) {
                 continue;
             }

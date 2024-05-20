@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright  Softleister 2007-2021
+ * @copyright  Softleister 2007-2024
  * @author     Softleister <info@softleister.de>
  * @package    BackupDB - Database backup
  * @license    LGPL

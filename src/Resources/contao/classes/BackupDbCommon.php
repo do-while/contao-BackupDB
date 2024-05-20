@@ -8,17 +8,17 @@
  * @see	       https://github.com/do-while/contao-BackupDB
  */
 
-/**
- * Run in a custom namespace, so the class can be replaced
- */
 namespace Softleister\BackupDB;
 
+use Contao\Backend;
+use Contao\StringUtil;
+use Contao\Database;
+use Contao\Environment;
+use Contao\System;
+use Contao\CoreBundle\ContaoCoreBundle;
+use Composer\InstalledVersions;
 use Softleister\BackupDB\ComposerPackages;
 use DirectoryIterator;
-use Contao\System;
-use Contao\Environment;
-use Contao\Database;
-use Contao\Backend;
 
 
 //-------------------------------------------------------------------
@@ -46,18 +46,15 @@ class BackupDbCommon extends Backend
     //---------------------------------------
     public static function getHeaderInfo( $sql_mode, $savedby = 'Saved by Cron' )
     {
-        $objDB = Database::getInstance();
-
-        $instExt = array();
-        $bundles = array();
+        $bundles = [];
 
         $result = "#================================================================================\r\n"
                 . "# Contao-Website   : " . (isset($GLOBALS['TL_CONFIG']['websiteTitle']) ? $GLOBALS['TL_CONFIG']['websiteTitle'] : Environment::get('host')) . "\r\n"
-                . "# Contao-Database  : " . $GLOBALS['TL_CONFIG']['dbDatabase'] . "\r\n"
+                . "# Contao-Database  : " . System::getContainer()->get('database_connection')->getParams()['dbname'] . "\r\n"
                 . "# " . $savedby . "\r\n"
                 . "# Time stamp       : " . date( "Y-m-d" ) . " at " . date( "H:i:s" ) . "\r\n"
                 . "#\r\n"
-                . "# Contao Extension : BackupDbBundle, Version " . System::getContainer()->getParameter('kernel.packages')['do-while/contao-backupdb-bundle'] . "\r\n"
+                . "# Contao Extension : BackupDbBundle, Version " . InstalledVersions::getPrettyVersion('do-while/contao-backupdb-bundle') . "\r\n"
                 . "# Copyright        : Softleister (www.softleister.de)\r\n"
                 . "# Licence          : LGPL\r\n"
                 . "#\r\n"
@@ -69,20 +66,16 @@ class BackupDbCommon extends Backend
                 . "# If you save the backup in ZIP file, a file restoreSymlinks.php\r\n"
                 . "# is also in the ZIP. See the file for more information\r\n"
                 . "#-----------------------------------------------------\r\n"
-                . "# Contao Version " . VERSION . "." . BUILD . "\r\n"
+                . "# Contao Version " . ContaoCoreBundle::getVersion() . "\r\n"
                 . "# The following packages must be installed:\r\n"
                 . "#\r\n";
 
         //--- installierte Pakete ---
-        $rootDir = System::getContainer()->getParameter('kernel.project_dir');  // TL_ROOT
+        $rootDir = System::getContainer()->getParameter('kernel.project_dir');          // TL_ROOT
         $objComposerPackages = new ComposerPackages($rootDir);
         
-        if (true === $objComposerPackages->parseComposerJson() &&
-            true === $objComposerPackages->parseComposerLock()
-           )
-        {
-            // $bundles: array('name' => 'version')
-            $bundles = $objComposerPackages->getPackages(self::$arrExclude);
+        if( (true === $objComposerPackages->parseComposerJson()) && (true === $objComposerPackages->parseComposerLock()) ) {
+            $bundles = $objComposerPackages->getPackages( self::$arrExclude );
         }
         ksort( $bundles );                                                   // sortieren nach name (key)
 
@@ -98,8 +91,7 @@ class BackupDbCommon extends Backend
                 . "#================================================================================\r\n"
                 . "\r\n";
         if( $sql_mode ) {
-            $result .= 'SET autocommit = 0;'. "\r\n"
-                    . 'SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";' . "\r\n"
+            $result .= 'SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";' . "\r\n"
                     . 'SET time_zone = "+00:00";' . "\r\n"
                     . "\r\n"
                     . "/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;\r\n"
@@ -117,17 +109,17 @@ class BackupDbCommon extends Backend
     //------------------------------------------------
     public static function getFromDB( )
     {
-        $result = array();
+        $result = [];
         $objDB = Database::getInstance( );
 
-        $tables = $objDB->listTables( null, true );
+        $tables = $objDB->listTables( null, true );             // blnNoCache = true
         if( empty($tables) ) {
             return $result;
         }
 
         foreach( $tables as $table ) {
             $keys = array();
-            $fields = $objDB->listFields($table, true);
+            $fields = $objDB->listFields( $table, true );       // blnNoCache = true
 
             foreach( $fields as $field ) {
                 $name = $field['name'];
@@ -150,7 +142,7 @@ class BackupDbCommon extends Backend
                     }
 
                     // Variant collation
-                    if( !empty($field['collation']) && ($field['collation'] !== $GLOBALS['TL_CONFIG']['dbCollation']) ) {
+                    if( !empty($field['collation']) && ($field['collation'] !== System::getContainer()->get('database_connection')->getParams()['defaultTableOptions']['collate']) ) {
                         $field['collation'] = 'COLLATE ' . $field['collation'];
                     }
                     else {
@@ -247,7 +239,7 @@ class BackupDbCommon extends Backend
     {
         $objDB = Database::getInstance();
 
-        $objData = $objDB->executeUncached( "SELECT * FROM $table" );
+        $objData = $objDB->execute( "SELECT * FROM $table" );
 
         $fields = $objDB->listFields( $table );                  // Liste der Felder lesen
         $fieldlist = '';
@@ -339,7 +331,7 @@ class BackupDbCommon extends Backend
         $arrBlacklist = array();                // Default: alle Datentabellen werden gesichert
 
         if( isset( $GLOBALS['TL_CONFIG']['backupdb_blacklist'] ) && !empty(trim($GLOBALS['TL_CONFIG']['backupdb_blacklist'])) ) {
-            $arrBlacklist = trimsplit(',', strtolower($GLOBALS['TL_CONFIG']['backupdb_blacklist']));
+            $arrBlacklist = StringUtil::trimsplit(',', strtolower($GLOBALS['TL_CONFIG']['backupdb_blacklist']));
         }
 
         return $arrBlacklist;
@@ -352,7 +344,7 @@ class BackupDbCommon extends Backend
     public static function get_symlinks( )
     {
         Self::$arrSymlinks = array();               // leeres Array
-        $url = TL_ROOT . '/';
+        $url = System::getContainer()->getParameter('kernel.project_dir') . '/';
 
         Self::iterateDir( $url );                   // Symlinks suchen
         asort( Self::$arrSymlinks );                // alphabetisch sortieren
@@ -364,12 +356,12 @@ class BackupDbCommon extends Backend
 
         $script = "<?php\n\n"
                 . "// This file is part of a backup, included in the zip archive.\n"
-                . "// Place the restoreSymlinks.php in the web directory of your\n"
-                . "// contao 4 and call http://domain.tld/restoreSymlinks.php\n"
+                . "// Place the restoreSymlinks.php in the /public directory of your\n"
+                . "// Contao 5 and call http://domain.tld/restoreSymlinks.php\n"
                 . "// After running script clear symfony-cache, e.g. with Contao Manager\n\n"
                 . '$arrSymlinks = unserialize(\'' . serialize( $links ) . "');\n\n"
                 . "// Check current position\n"
-                . 'if( !is_dir( "../web" ) || !file_exists( "./app.php" ) ) {' . "\n"
+                . 'if( !is_dir( "../public" ) || !file_exists( "./preview.php" ) ) {' . "\n"
                 . "\t" . 'die( "The file is not in the correct directory" );' . "\n"
                 . "}\n\n"
                 . "// detect OS\n"
@@ -438,7 +430,7 @@ class BackupDbCommon extends Backend
     //------------------------------------------------
     public static function getLinkData( $link )
     {
-        $root = str_replace('\\', '/', TL_ROOT) . '/';
+        $root = str_replace( '\\', '/', System::getContainer()->getParameter('kernel.project_dir') ) . '/';
         $sym = substr( str_replace('\\', '/', $link), strlen($root) );
         $target = str_replace('\\', '/', readlink( $link ) );
         

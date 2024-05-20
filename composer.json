@@ -16,11 +16,14 @@
         "source": "https://github.com/do-while/contao-BackupDB"
     },
     "require": {
-        "php": ">=7.2.0",
-        "contao/core-bundle": ">=4.9.0,<5.0",
-        "symfony/routing": "^4.2 || ^5.0"
+        "php": "^8.1",
+        "contao/core-bundle": "~5.3",
+        "symfony/routing": "^5.4 || ^6.0"
     },
     "autoload": {
+        "psr-4": {
+            "Softleister\\BackupDbBundle\\": "src/"
+        },
         "classmap": [
             "src/Resources/contao/"
         ],
@@ -30,12 +33,9 @@
             "src/Resources/contao/dca/",
             "src/Resources/contao/languages/",
             "src/Resources/contao/templates/"
-        ],
-        "psr-4": {
-            "Softleister\\BackupDbBundle\\": "src/"
-        }
+        ]
     },
     "extra": {
-		"contao-manager-plugin": "Softleister\\BackupDbBundle\\ContaoManager\\Plugin"
+        "contao-manager-plugin": "Softleister\\BackupDbBundle\\ContaoManager\\Plugin"
     }
 }

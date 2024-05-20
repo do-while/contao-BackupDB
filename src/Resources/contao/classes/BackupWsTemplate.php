@@ -8,17 +8,15 @@
  * @see	       https://github.com/do-while/contao-BackupDB
  */
 
-/**
- * Run in a custom namespace, so the class can be replaced
- */
 namespace Softleister\BackupDB;
 
 use Contao\Backend;
 use Contao\File;
 use Contao\StringUtil;
+use Contao\BackendUser;
 use Contao\Environment;
 use Contao\System;
-use Contao\BackendUser;
+use Softleister\BackupDB\BackupDbCommon;
 
 
 //-------------------------------------------------------------------
@@ -32,7 +30,12 @@ class BackupWsTemplate extends Backend
     public function __construct( )
     {
         parent::__construct();                      // Construktor Backend ausführen
-        BackendUser::authenticate();                // Authentifizierung überprüfen
+        // BackendUser::authenticate();                // Authentifizierung überprüfen
+
+        $user = System::getContainer()->get('security.helper')->getUser();
+        if( !$user instanceof BackendUser ) {
+            return;
+        }
     }
 
     //-------------------------
@@ -41,6 +44,7 @@ class BackupWsTemplate extends Backend
     public static function run( )
     {
         @set_time_limit( 600 );
+        $rootdir = System::getContainer()->getParameter('kernel.project_dir');      // TL_ROOT
         System::loadLanguageFile('tl_backupdb');                                    // Modultexte laden
 
         $user     = BackendUser::getInstance();                                     // Backend-User
@@ -70,10 +74,10 @@ class BackupWsTemplate extends Backend
 
         //--- Zielverzeichnis für Website-Templates ---
         $zielVerz = 'templates';
-        if( isset( $GLOBALS['BACKUPDB']['WsTemplatePath'] ) && is_dir(TL_ROOT . '/' . trim($GLOBALS['BACKUPDB']['WsTemplatePath'], '/')) ) {
+        if( isset( $GLOBALS['BACKUPDB']['WsTemplatePath'] ) && is_dir($rootdir . '/' . trim($GLOBALS['BACKUPDB']['WsTemplatePath'], '/')) ) {
             $zielVerz = trim($GLOBALS['BACKUPDB']['WsTemplatePath'], '/');
         }
-        if( isset( $GLOBALS['TL_CONFIG']['WsTemplatePath'] ) && is_dir(TL_ROOT . '/' . trim($GLOBALS['TL_CONFIG']['WsTemplatePath'], '/')) && !empty(trim($GLOBALS['TL_CONFIG']['WsTemplatePath'])) ) {
+        if( isset( $GLOBALS['TL_CONFIG']['WsTemplatePath'] ) && is_dir($rootdir . '/' . trim($GLOBALS['TL_CONFIG']['WsTemplatePath'], '/')) && !empty(trim($GLOBALS['TL_CONFIG']['WsTemplatePath'])) ) {
             $zielVerz = trim($GLOBALS['TL_CONFIG']['WsTemplatePath'], '/');
         }
 
@@ -93,7 +97,7 @@ class BackupWsTemplate extends Backend
 
         $arrSavedDB = array( 'tl_' );               // Default, Verhalten wie in den Vorversionen von BackupDB
         if( isset( $GLOBALS['TL_CONFIG']['backupdb_saveddb'] ) && !empty(trim($GLOBALS['TL_CONFIG']['backupdb_saveddb'])) ) {
-            $arrSavedDB = trimsplit( ',', strtolower($GLOBALS['TL_CONFIG']['backupdb_saveddb']) );
+            $arrSavedDB = StringUtil::trimsplit( ',', strtolower($GLOBALS['TL_CONFIG']['backupdb_saveddb']) );
         }
 
         $arrBlacklist = BackupDbCommon::get_blacklist( );
@@ -124,7 +128,7 @@ class BackupWsTemplate extends Backend
         $datei->write( "\r\nSET autocommit = 1;\r\n\r\n# --- End of Backup ---" );      // Endekennung
         $datei->close();
 
-        $datei = new File( $tempdir . $fileSTR );                                   // Strukturdatei öffnen
+        $datei = new File( $tempdir . $fileSTR );                   // Strukturdatei öffnen
         $datei->write( BackupDbCommon::getHeaderInfo( true, 'Saved by User    : ' . $user->username . ' (' . $user->name . ')' ));
 
         $sqlarray = BackupDbCommon::getFromDB( );
@@ -140,26 +144,26 @@ class BackupWsTemplate extends Backend
                       ."/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;\r\n"
                       ."/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;\r\n"
                       . "SET autocommit = 1;\r\n"                         // Endekennung
-                      . "\r\n# --- End of Backup ---\r\n" );
-      $datei->close();
+                      ."\r\n# --- End of Backup ---\r\n" );                            // Endekennung
+        $datei->close();
 
-        $datei = new File( $tempdir . $fileTXT );                        // Textdatei öffnen
+        $datei = new File( $tempdir . $fileTXT );                   // Textdatei öffnen
         $datei->write( $headertext );
         $datei->close();
 
         //--- alte Dateien löschen, neue ans Ziel verschieben ---
-        if( file_exists(TL_ROOT . '/' . $zielVerz . '/' . $fileSQL) ) {     // Delete old files if exist
-            unlink(TL_ROOT . '/' . $zielVerz . '/' . $fileSQL);
+        if( file_exists($rootdir . '/' . $zielVerz . '/' . $fileSQL) ) {     // Delete old files if exist
+            unlink($rootdir . '/' . $zielVerz . '/' . $fileSQL);
         }
-        if( file_exists(TL_ROOT . '/' . $zielVerz . '/' . $fileSTR) ) {
-            unlink(TL_ROOT . '/' . $zielVerz . '/' . $fileSTR);
+        if( file_exists($rootdir . '/' . $zielVerz . '/' . $fileSTR) ) {
+            unlink($rootdir . '/' . $zielVerz . '/' . $fileSTR);
         }
-        if( file_exists(TL_ROOT . '/' . $zielVerz . '/' . $fileTXT) ) {
-            unlink(TL_ROOT . '/' . $zielVerz . '/' . $fileTXT);
+        if( file_exists($rootdir . '/' . $zielVerz . '/' . $fileTXT) ) {
+            unlink($rootdir . '/' . $zielVerz . '/' . $fileTXT);
         }
-        rename( TL_ROOT . $tempdir . $fileSQL, TL_ROOT . '/' . $zielVerz . '/' . $fileSQL );        // Move new files
-        rename( TL_ROOT . $tempdir . $fileSTR, TL_ROOT . '/' . $zielVerz . '/' . $fileSTR );
-        rename( TL_ROOT . $tempdir . $fileTXT, TL_ROOT . '/' . $zielVerz . '/' . $fileTXT );
+        rename( $rootdir . $tempdir . $fileSQL, $rootdir . '/' . $zielVerz . '/' . $fileSQL );        // Move new files
+        rename( $rootdir . $tempdir . $fileSTR, $rootdir . '/' . $zielVerz . '/' . $fileSTR );
+        rename( $rootdir . $tempdir . $fileTXT, $rootdir . '/' . $zielVerz . '/' . $fileTXT );
 
         //--- Ergebnisausgabe ---
         $arrResults['header']['text']    = $GLOBALS['TL_LANG']['tl_backupdb']['tplhead'];

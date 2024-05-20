@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright  Softleister 2007-2021
+ * @copyright  Softleister 2007-2024
  * @author     Softleister <info@softleister.de>
  * @package    BackupDB - Database backup
  * @license    LGPL
@@ -17,10 +17,8 @@ define('BACKUPDB_CRON_LAST', 'AutoBackupDB.last');
  * BACK END MODULES
  * -------------------------------------------------------------------------
  */
-array_insert($GLOBALS['BE_MOD']['system'], -1, array
+$GLOBALS['BE_MOD']['system']['BackupDB'] = array
 (
-	'BackupDB' => array (
-		'callback'   => 'Softleister\BackupDB\ModuleBackupDB',
-		'stylesheet' => 'bundles/softleisterbackupdb/styles.min.css',
-	)
-));
+    'callback'   => 'Softleister\BackupDB\ModuleBackupDB',
+    'stylesheet' => 'bundles/softleisterbackupdb/styles.min.css',
+);

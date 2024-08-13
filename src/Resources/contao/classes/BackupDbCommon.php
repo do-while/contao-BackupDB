@@ -159,7 +159,7 @@ class BackupDbCommon extends Backend
                     }
                     // Everything else
                     else {
-                        $field['default'] = "default '" . $field['default'] . "'";
+                        $field['default'] = "default '" . str_replace('\\', '\\\\', $field['default']) . "'";
                     }
 
                     unset( $field['origtype'] );
@@ -294,7 +294,7 @@ class BackupDbCommon extends Backend
                                             break;
 
                         case 'text':
-                        case 'mediumtext':  if( strpos( $field_data, "'" ) !== false ) {  // ist im Text ein Hochkomma vorhanden, wird der Text in HEX-Darstellung gesichert
+                        case 'mediumtext':  if( (strpos( $field_data, "'" ) !== false) || (strpos( $field_data, '\\' ) !== false) ) {  // ist im Text ein Hochkomma vorhanden, wird der Text in HEX-Darstellung gesichert
                                                 $insert_data .= " 0x" . bin2hex($field_data) . ",";
                                                 break;
                                             }

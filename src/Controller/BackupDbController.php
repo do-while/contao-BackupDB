@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright  Softleister 2007-2021
+ * @copyright  Softleister 2007-2025
  * @author     Softleister <info@softleister.de>
  * @package    BackupDB - Database backup
  * @license    LGPL
@@ -14,39 +14,32 @@ use Contao\CoreBundle\Framework\ContaoFramework;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+
 /**
  * Handles the AutoBackup frontend routes.
  *
- * @copyright  Softleister 2007-2021
+ * @copyright  Softleister 2007-2025
  * @author     Softleister <info@softleister.de>
  *
- * @Route("/BackupDB")
  */
+#[Route('/BackupDB', name: 'backupdb_', defaults: ['_scope' => 'frontend'])]
 class BackupDbController
 {
-    /**
-     * @var ContaoFramework
-     */
     private $framework;
 
-    public function __construct(ContaoFramework $framework)
+    public function __construct( ContaoFramework $framework )
     {
         $this->framework = $framework;
     }
 
-    /**
-     * Renders the alerts content.
-     *
-     * @return Response
-     *
-     * @Route("/autobackup", name="backupdb_autobackup")
-     */
-    public function autoBackupAction()
+
+    #[Route("/autobackup", name:"autobackup")]
+    public function autoBackupAction(): Response
     {
-        $this->framework->initialize();
+        $this->framework->initialize( );
 
-        $controller = new \Softleister\BackupDB\AutoBackupDb();
+        $controller = new \Softleister\BackupDB\AutoBackupDb( );
 
-        return $controller->run();
+        return $controller->run( );
     }
 }
